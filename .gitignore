@@ -1,0 +1,18 @@
+# Ignore everything
+*
+
+# Whitelist only project files
+!.github/
+!**/workflows/
+!.gitignore
+!.flake8
+!*.json
+!*.yml
+!*.md
+!*.py
+!**/testdata/
+!**/tests/
+!json_fingerprint/
+!LICENSE
+!requirements*.in
+!requirements*.txt
