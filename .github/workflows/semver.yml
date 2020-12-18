@@ -1,7 +1,8 @@
-name: Semver bump
+name: Bump version
 on:
   push:
     branches:
+      - master
       - main
 jobs:
   build:
