@@ -1,4 +1,4 @@
-# json-fingerprint
+![](https://img.shields.io/github/license/cobaltine/json-fingerprint) ![](https://img.shields.io/pypi/pyversions/json-fingerprint) ![](https://img.shields.io/pypi/v/json-fingerprint) [![Coverage Status](https://coveralls.io/repos/github/cobaltine/json-fingerprint/badge.svg?branch=main)](https://coveralls.io/github/cobaltine/json-fingerprint?branch=main)
 
 The **json-fingerprint** package provides easy checksum creation ("fingerprinting") from unordered JSON data.
 
@@ -23,4 +23,5 @@ This will output two identical fingerprints regardless of the different ordering
 
 ```
 fp_1: jfpv1$sha256$5815eb0ce6f4e5ab0a771cce2a8c5432f64222f8fd84b4cc2d38e4621fae86af
-fp_2: jfpv1$sha256$5815eb0ce6f4e5ab0a771cce2a8c5432f64222f8fd84b4cc2d38e4621fae86af```
+fp_2: jfpv1$sha256$5815eb0ce6f4e5ab0a771cce2a8c5432f64222f8fd84b4cc2d38e4621fae86af
+```

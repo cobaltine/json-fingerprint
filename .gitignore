@@ -6,6 +6,7 @@
 !**/workflows/
 !.gitignore
 !.flake8
+!.coveragerc
 !*.json
 !*.yml
 !*.md
