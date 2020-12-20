@@ -1,0 +1,6 @@
+[run]
+source = json_fingerprint/
+omit = */site-packages/*,*/tests/*,json_fingerprint/__init__.py
+
+[report]
+omit = */site-packages/*,*/tests/*,json_fingerprint/__init__.py
