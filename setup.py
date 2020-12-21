@@ -4,7 +4,8 @@ with open('README.md', 'r', encoding='utf-8') as f:
     long_description = f.read()
 
 with open('.version', 'r', encoding='utf-8') as f:
-    version = f.read()[1:]  # Omit 'v'
+    version_raw = f.read()[1:]  # omit 'v'
+    version = version_raw.split('-')[0]  # omit trailing version identifiers
 
 setuptools.setup(
     name='json-fingerprint',
