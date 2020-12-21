@@ -3,7 +3,7 @@ name: Release Python package
 on:
   push:
     tags:
-      - '*'
+      - 'v*'
 
 jobs:
   deploy:
