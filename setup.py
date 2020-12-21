@@ -3,9 +3,12 @@ import setuptools
 with open('README.md', 'r', encoding='utf-8') as f:
     long_description = f.read()
 
+with open('README.md', 'r', encoding='utf-8') as f:
+    version = f.read()[1:]  # Omit 'v'
+
 setuptools.setup(
     name='json-fingerprint',
-    version='0.0.3',
+    version=version,
     author='Ville Lehtinen',
     author_email='ville.lehtinen@cobaltine.fi',
     license='MIT',
@@ -15,9 +18,13 @@ setuptools.setup(
     url='https://github.com/cobaltine/json-fingerprint',
     packages=setuptools.find_packages(),
     classifiers=[
-        'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
     ],
     python_requires='>=3.6',
 )
