@@ -8,7 +8,7 @@ To install the package, run `pip install json-fingerprint`.
 
 Below is a sample for creating simple fingerprints:
 
-```
+```python
 import json
 import json_fingerprint as jfp
 
