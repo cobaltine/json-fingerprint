@@ -18,11 +18,14 @@ FINGERPRINT_VERSIONS = (
 class FingerprintJSONLoadError(Exception):
     pass
 
+
 class FingerprintInputDataTypeError(Exception):
     pass
 
+
 class FingerprintHashFunctionError(Exception):
     pass
+
 
 class FingerprintVersionError(Exception):
     pass
@@ -51,6 +54,7 @@ def _flatten_json(data: Dict, out: List, path: str = '') -> List:
 
     return out
 
+
 def _create_hash_list(data: Dict) -> List[Dict]:
     out = []
     for obj in data:
@@ -61,9 +65,10 @@ def _create_hash_list(data: Dict) -> List[Dict]:
     out.sort()
     return out
 
-def json_fingerprint(data: str, hash_function: str, version: str) -> str:
-    if type(data) is not str:
-        err = f'Expected data type \'{type("")}\' (JSON in string format), instead got \'{type(data)}\''
+
+def json_fingerprint(input: str, hash_function: str, version: str) -> str:
+    if type(input) is not str:
+        err = f'Expected data type \'{type("")}\' (JSON in string format), instead got \'{type(input)}\''
         raise FingerprintInputDataTypeError(err)
 
     if hash_function not in FINGERPRINT_HASH_FUNCTIONS:
@@ -77,7 +82,7 @@ def json_fingerprint(data: str, hash_function: str, version: str) -> str:
         raise FingerprintVersionError(err)
 
     try:
-        loaded = json.loads(data)
+        loaded = json.loads(input)
     except Exception:
         err = 'Unable to load JSON'
         raise FingerprintJSONLoadError(err) from None
