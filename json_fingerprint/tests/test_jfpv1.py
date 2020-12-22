@@ -47,7 +47,7 @@ class TestJsonFingerprint(unittest.TestCase):
         Verify that:
         - FingerprintVersionError is properly raised with unsupported version"""
         with self.assertRaises(jfp.FingerprintVersionError):
-            jfp.json_fingerprint(data=self.test_obj_1, hash_function='sha256', version=-1)
+            jfp.json_fingerprint(input=self.test_obj_1, hash_function='sha256', version=-1)
 
     def test_jfpv1_input_data_type_error(self):
         """Test jfpv1 input data type error.
@@ -55,7 +55,7 @@ class TestJsonFingerprint(unittest.TestCase):
         Verify that:
         - FingerprintInputDataTypeError is properly raised with incorrect data type input"""
         with self.assertRaises(jfp.FingerprintInputDataTypeError):
-            jfp.json_fingerprint(data={'foo': 'bar'}, hash_function='sha256', version=1)
+            jfp.json_fingerprint(input={'foo': 'bar'}, hash_function='sha256', version=1)
 
     def test_jfpv1_hash_function_error(self):
         """Test JSON fingerprint hash function selector error.
@@ -63,7 +63,7 @@ class TestJsonFingerprint(unittest.TestCase):
         Verify that:
         - FingerprintHashFunctionError is properly raised with unsupported hash function selector"""
         with self.assertRaises(jfp.FingerprintHashFunctionError):
-            jfp.json_fingerprint(data=self.test_obj_1, hash_function='not123', version=1)
+            jfp.json_fingerprint(input=self.test_obj_1, hash_function='not123', version=1)
 
     def test_jfpv1_json_load_error(self):
         """Test JSON fingerprint raw JSON string load error.

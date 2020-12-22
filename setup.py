@@ -13,7 +13,7 @@ setuptools.setup(
     author='Ville Lehtinen',
     author_email='ville.lehtinen@cobaltine.fi',
     license='MIT',
-    description='json fingerprinting tool for creating consistent and comparable checksums of unordered json data',
+    description='Create consistent and comparable fingerprints (checksums/hashes) from unordered JSON data',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/cobaltine/json-fingerprint',
