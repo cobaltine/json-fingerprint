@@ -31,38 +31,53 @@ class FingerprintVersionError(Exception):
     pass
 
 
-def _flatten_json(data: Dict, out: List, path: str = '') -> List:
-    if type(data) is dict:
-        for key in data.keys():
-            if path:
-                p = f'{path}|{{{key}}}'
-            else:
-                p = key
-            _flatten_json(data[key], out=out, path=p)
-    elif type(data) is list:
-        if path:
-            p = f'{path}|[{len(data)}]'
-        else:
-            p = f'[{len(data)}]'
-        for item in data:
-            _flatten_json(item, out=out, path=p)
-    else:
-        out.append({
-            'path': path,
-            'value': data
-        })
+def _create_hash(data) -> str:
+    stringified = json.dumps(data, sort_keys=True)
+    m = hashlib.sha256()
+    m.update(stringified.encode('utf-8'))
+    return m.hexdigest()
 
+
+def _create_sorted_hash_list(data: Dict) -> List[Dict]:
+    out = []
+    for obj in data:
+        hash = _create_hash(obj)
+        out.append(hash)
+    out.sort()
     return out
 
 
-def _create_hash_list(data: Dict) -> List[Dict]:
+def _flatten_json(data: Dict, path: str = '', siblings: List = [], debug: bool = False) -> List:
     out = []
-    for obj in data:
-        stringified = json.dumps(obj, sort_keys=True)
-        m = hashlib.sha256()
-        m.update(stringified.encode('utf-8'))
-        out.append(m.hexdigest())
-    out.sort()
+    if type(data) is dict:
+        for key in data.keys():
+            p = f'{{{key}}}'
+            if path:
+                p = f'{path}|{p}'
+            out.extend(_flatten_json(data[key], path=p, siblings=siblings, debug=debug))
+    elif type(data) is list:
+        p = f'[{len(data)}]'
+        if path:
+            p = f'{path}|{p}'
+
+        siblings = []
+        for item in data:
+            output = _flatten_json(item, path=p, debug=debug)
+            siblings.extend(output)
+
+        for item in data:
+            output = _flatten_json(item, path=p, siblings=siblings, debug=debug)
+            out.extend(output)
+    else:
+        if not debug:
+            siblings = _create_sorted_hash_list(siblings)
+        element = {
+            'path': path,
+            'siblings': siblings,
+            'value': data,
+        }
+        out.append(element)
+
     return out
 
 
@@ -87,10 +102,7 @@ def json_fingerprint(input: str, hash_function: str, version: str) -> str:
         err = 'Unable to load JSON'
         raise FingerprintJSONLoadError(err) from None
 
-    flattened_json = []
-    _flatten_json(data=loaded, out=flattened_json)
-    hash_list = _create_hash_list(data=flattened_json)
-    stringified = json.dumps(hash_list)
-    m = hashlib.sha256()
-    m.update(stringified.encode('utf-8'))
-    return f'jfpv1${hash_function}${m.hexdigest()}'
+    flattened_json = _flatten_json(data=loaded)
+    sorted_hash_list = _create_sorted_hash_list(data=flattened_json)
+    hex_digest = _create_hash(sorted_hash_list)
+    return f'jfpv1${hash_function}${hex_digest}'

@@ -1,6 +1,6 @@
 # json-fingerprint
 
-![](https://img.shields.io/github/license/cobaltine/json-fingerprint) ![](https://img.shields.io/pypi/pyversions/json-fingerprint) ![](https://img.shields.io/github/workflow/status/cobaltine/json-fingerprint/Test%20runner/main) ![](https://img.shields.io/github/workflow/status/cobaltine/json-fingerprint/Release%20Python%20package/main?label=pypi%20release) [![](https://img.shields.io/pypi/v/json-fingerprint)](https://pypi.org/project/json-fingerprint/) [![Coverage Status](https://coveralls.io/repos/github/cobaltine/json-fingerprint/badge.svg?branch=main)](https://coveralls.io/github/cobaltine/json-fingerprint?branch=main)
+![](https://img.shields.io/github/license/cobaltine/json-fingerprint) ![](https://img.shields.io/pypi/pyversions/json-fingerprint) ![](https://img.shields.io/github/workflow/status/cobaltine/json-fingerprint/Test%20runner/main) ![](https://img.shields.io/github/workflow/status/cobaltine/json-fingerprint/Release%20Python%20package/main?label=pypi%20release) [![](https://img.shields.io/pypi/v/json-fingerprint)](https://pypi.org/project/json-fingerprint/) ![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/cobaltine/json-fingerprint) [![Coverage Status](https://coveralls.io/repos/github/cobaltine/json-fingerprint/badge.svg?branch=main)](https://coveralls.io/github/cobaltine/json-fingerprint?branch=main)
 
 
 Create consistent and comparable fingerprints (checksums/hashes) from unordered JSON data.
@@ -33,16 +33,8 @@ print(f'Fingerprint 2: {fp_2}')
 This will output two identical fingerprints regardless of the different order of the json elements:
 
 ```
-Fingerprint 1: jfpv1$sha256$5815eb0ce6f4e5ab0a771cce2a8c5432f64222f8fd84b4cc2d38e4621fae86af
-Fingerprint 2: jfpv1$sha256$5815eb0ce6f4e5ab0a771cce2a8c5432f64222f8fd84b4cc2d38e4621fae86af
+Fingerprint 1: jfpv1$sha256$287b67bce7ac4477011ba59ea55f168ba493508ffa6b61ef81594c9dab2c034f
+Fingerprint 2: jfpv1$sha256$287b67bce7ac4477011ba59ea55f168ba493508ffa6b61ef81594c9dab2c034f
 ```
-If the previous example was extended a bit, the objects could be easily compared:
-```python
-if fp_1 == fp_2:
-    # Do something if fingerprints match
-    print('Fingerprints match')
-else:
-    # Do nothing or something else
-    print('Fingerprints not matching')
-```
+
 Since json objects with identical data content and structure will always produce identical fingerprints, the fingerprints can be used effectively for various purposes. These include finding duplicate json data from a larger dataset, json data cache validation/invalidation and data integrity checking.
