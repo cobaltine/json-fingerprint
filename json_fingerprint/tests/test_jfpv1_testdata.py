@@ -23,8 +23,7 @@ class TestJsonFingerprint(unittest.TestCase):
         fp_1 = jfp.json_fingerprint(self.test_obj_1, hash_function='sha256', version=1)
         fp_2 = jfp.json_fingerprint(self.test_obj_2, hash_function='sha256', version=1)
         self.assertEqual(fp_1, fp_2)
-        self.assertEqual(fp_1,
-                         'jfpv1$sha256$ef72ce73da41ca55d727c47982f43d6955d2f33e37f0f2bbcfd569334d458e58')
+        self.assertEqual(fp_1, 'jfpv1$sha256$ef72ce73da41ca55d727c47982f43d6955d2f33e37f0f2bbcfd569334d458e58')
 
 
 if __name__ == '__main__':
