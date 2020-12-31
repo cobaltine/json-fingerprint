@@ -2,6 +2,7 @@ import hashlib
 import json
 
 from typing import (
+    Any,
     Dict,
     List,
 )
@@ -55,6 +56,20 @@ def _build_path(key: str, base_path: str):
     return key
 
 
+def _build_element(path: str, siblings: List, value: Any):
+    if siblings:
+        return {
+            'path': path,
+            'siblings': siblings,
+            'value': value,
+        }
+
+    return {
+        'path': path,
+        'value': value,
+    }
+
+
 def _flatten_json(data: Dict, path: str = '', siblings: List = [], debug: bool = False) -> List:
     """Flatten json data structures into a sibling-aware data element list."""
     out = []
@@ -67,23 +82,25 @@ def _flatten_json(data: Dict, path: str = '', siblings: List = [], debug: bool =
 
     if type(data) is list:
         p = _build_path(key=f'[{len(data)}]', base_path=path)
+
+        # Iterate and collect sibling structures, which'll be then attached to each sibling element
         siblings = []
         for item in data:
             output = _flatten_json(data=item, path=p, debug=debug)
             siblings.extend(output)
 
+        # Debug mode, which allows non-hashed sibling structures to be inspected and tested against
+        if not debug:
+            siblings = _create_sorted_sha256_hash_list(siblings)
+            siblings = _create_json_sha256_hash(siblings)
+
+        # Recurse with each value in list to typecheck it and eventually get the element value
         for item in data:
             output = _flatten_json(data=item, path=p, siblings=siblings, debug=debug)
             out.extend(output)
         return out
 
-    if not debug:
-        siblings = _create_sorted_sha256_hash_list(siblings)
-    element = {
-        'path': path,
-        'siblings': siblings,
-        'value': data,
-    }
+    element = _build_element(path=path, siblings=siblings, value=data)
     out.append(element)
     return out
 
