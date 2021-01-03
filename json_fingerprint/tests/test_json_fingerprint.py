@@ -26,6 +26,22 @@ class TestJsonFingerprint(unittest.TestCase):
         fp = json_fingerprint(input='{"foo": "bar"}', hash_function='sha256', version=1)
         self.assertRegex(fp, '^jfpv1\\$sha256\\$[0-9a-f]{64}$')
 
+    def test_jfpv1_sha384_output_format(self):
+        """Test jfpv1 output format.
+
+        Verify that:
+        - Complete jfpv1-sha256 output fingerprint is properly formatted"""
+        fp = json_fingerprint(input='{"foo": "bar"}', hash_function='sha384', version=1)
+        self.assertRegex(fp, '^jfpv1\\$sha384\\$[0-9a-f]{96}$')
+
+    def test_jfpv1_sha512_output_format(self):
+        """Test jfpv1 output format.
+
+        Verify that:
+        - Complete jfpv1-sha256 output fingerprint is properly formatted"""
+        fp = json_fingerprint(input='{"foo": "bar"}', hash_function='sha512', version=1)
+        self.assertRegex(fp, '^jfpv1\\$sha512\\$[0-9a-f]{128}$')
+
     def test_jfpv1_sha256_mixed_order(self):
         """Test jfpv1 sha256 mixed order fingerprint match.
 

@@ -1,5 +1,7 @@
 JFPV1_HASH_FUNCTIONS = (
     'sha256',
+    'sha384',
+    'sha512',
 )
 
 JSON_FINGERPRINT_VERSIONS = (

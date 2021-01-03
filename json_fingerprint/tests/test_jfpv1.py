@@ -5,7 +5,7 @@ import unittest
 
 
 class TestJfpv1(unittest.TestCase):
-    def test_create_json_sha256_hash(self):
+    def test_create_json_hash(self):
         """Test jfpv1 json sha256 hash creation.
 
         Verify that:
@@ -15,10 +15,10 @@ class TestJfpv1(unittest.TestCase):
         m = hashlib.sha256()
         m.update(stringified.encode('utf-8'))
         expected_hex_digest = m.hexdigest()
-        hex_digest = _jfpv1._create_json_sha256_hash(data=data)
+        hex_digest = _jfpv1._create_json_hash(data=data, hash_function='sha256')
         self.assertEqual(hex_digest, expected_hex_digest)
 
-    def test_jfpv1_create_sorted_sha256_hash_list(self):
+    def test_jfpv1_create_sorted_hash_list(self):
         """Test jfpv1 hash list, used for condensing unique identifiers into an easily sortable list.
 
         Verify that:
@@ -33,7 +33,7 @@ class TestJfpv1(unittest.TestCase):
             'c',
         ]
 
-        output_data_hashes = _jfpv1._create_sorted_sha256_hash_list(data=input_data)
+        output_data_hashes = _jfpv1._create_sorted_hash_list(data=input_data, hash_function='sha256')
         input_data_hashes = []
         for datum in input_data:
             m = hashlib.sha256()
@@ -65,7 +65,7 @@ class TestJfpv1(unittest.TestCase):
         combination_path = _jfpv1._build_path(key=dict_key, base_path=list_key)
         self.assertEqual(combination_path, '[5]|{foo}')
 
-        obj_out_raw = _jfpv1._flatten_json(data=[1, {'[1]|{foo}': 'bar'}, 2], debug=False)
+        obj_out_raw = _jfpv1._flatten_json(data=[1, {'[1]|{foo}': 'bar'}, 2], hash_function='sha256')
         self.assertEqual(obj_out_raw[0]['path'], '[3]')
         self.assertEqual(obj_out_raw[1]['path'], '[3]|{[1]|{foo}}')
         self.assertEqual(obj_out_raw[2]['path'], '[3]')
@@ -87,7 +87,7 @@ class TestJfpv1(unittest.TestCase):
             1,
             [2, 3],
         ]
-        obj_out_raw = _jfpv1._flatten_json(data=obj_in, debug=True)
+        obj_out_raw = _jfpv1._flatten_json(data=obj_in, hash_function='sha256', debug=True)
         expected_obj_out_raw = [
             {
                 'path': '[2]',
@@ -131,45 +131,45 @@ class TestJfpv1(unittest.TestCase):
         ]
         self.assertEqual(obj_out_raw, expected_obj_out_raw)
 
-        obj_out = _jfpv1._flatten_json(data=obj_in, debug=False)
-        inner_list_siblings_hash_list = _jfpv1._create_sorted_sha256_hash_list([
+        obj_out = _jfpv1._flatten_json(data=obj_in, hash_function='sha256')
+        inner_list_siblings_hash_list = _jfpv1._create_sorted_hash_list([
             {'path': '[2]|[2]', 'value': 2},
             {'path': '[2]|[2]', 'value': 3}
-        ])
-        siblings_1 = _jfpv1._create_sorted_sha256_hash_list([
+        ], hash_function='sha256')
+        siblings_1 = _jfpv1._create_sorted_hash_list([
             {'path': '[2]', 'value': 1},
             {
                 'path': '[2]|[2]',
-                'siblings': _jfpv1._create_json_sha256_hash(inner_list_siblings_hash_list),
+                'siblings': _jfpv1._create_json_hash(data=inner_list_siblings_hash_list, hash_function='sha256'),
                 'value': 2
             },
             {
                 'path': '[2]|[2]',
-                'siblings': _jfpv1._create_json_sha256_hash(inner_list_siblings_hash_list),
+                'siblings': _jfpv1._create_json_hash(data=inner_list_siblings_hash_list, hash_function='sha256'),
                 'value': 3
             }
-        ])
+        ], hash_function='sha256')
         expected_out_hash_lists = [
             {
                 'path': '[2]',
-                'siblings': _jfpv1._create_json_sha256_hash(siblings_1),
+                'siblings': _jfpv1._create_json_hash(data=siblings_1, hash_function='sha256'),
                 'value': 1
             },
             {
                 'path': '[2]|[2]',
-                'siblings': _jfpv1._create_json_sha256_hash(inner_list_siblings_hash_list),
+                'siblings': _jfpv1._create_json_hash(data=inner_list_siblings_hash_list, hash_function='sha256'),
                 'value': 2
             },
             {
                 'path': '[2]|[2]',
-                'siblings': _jfpv1._create_json_sha256_hash(inner_list_siblings_hash_list),
+                'siblings': _jfpv1._create_json_hash(data=inner_list_siblings_hash_list, hash_function='sha256'),
                 'value': 3
             },
         ]
         self.assertEqual(obj_out, expected_out_hash_lists)
 
-        sorted_hash_list = _jfpv1._create_sorted_sha256_hash_list(data=obj_out)
-        hex_digest = _jfpv1._create_json_sha256_hash(data=sorted_hash_list)
+        sorted_hash_list = _jfpv1._create_sorted_hash_list(data=obj_out, hash_function='sha256')
+        hex_digest = _jfpv1._create_json_hash(data=sorted_hash_list, hash_function='sha256')
         jfpv1_out_1 = f'jfpv1$sha256${hex_digest}'
         jfpv1_out_2 = _jfpv1._create_jfpv1_fingerprint(data=obj_in, hash_function='sha256', version=1)
         self.assertEqual(jfpv1_out_1, jfpv1_out_2)
@@ -181,7 +181,7 @@ class TestJfpv1(unittest.TestCase):
         - Integers are 'flattened' correctly (path, siblings and value)
         - Fingerprint matches with pre-verified fingerprint"""
         int_val = 123
-        int_out_raw = _jfpv1._flatten_json(data=int_val)
+        int_out_raw = _jfpv1._flatten_json(data=int_val, hash_function='sha256')
         expected_int_out_raw = [{'path': '', 'value': int_val}]
         self.assertEqual(int_out_raw, expected_int_out_raw)
 
@@ -192,7 +192,7 @@ class TestJfpv1(unittest.TestCase):
         - Floats are 'flattened' correctly (path, siblings and value)
         - Fingerprint matches with pre-verified fingerprint"""
         float_val = 123.321
-        float_out_raw = _jfpv1._flatten_json(data=float_val)
+        float_out_raw = _jfpv1._flatten_json(data=float_val, hash_function='sha256')
         expected_float_out_raw = [{'path': '', 'value': float_val}]
         self.assertEqual(float_out_raw, expected_float_out_raw)
 
@@ -203,7 +203,7 @@ class TestJfpv1(unittest.TestCase):
         - Strings are 'flattened' correctly (path, siblings and value)
         - Fingerprint matches with pre-verified fingerprint"""
         string_val = 'alpha 123'
-        string_out_raw = _jfpv1._flatten_json(data=string_val)
+        string_out_raw = _jfpv1._flatten_json(data=string_val, hash_function='sha256')
         expected_string_out_raw = [{'path': '', 'value': string_val}]
         self.assertEqual(string_out_raw, expected_string_out_raw)
 
@@ -214,7 +214,7 @@ class TestJfpv1(unittest.TestCase):
         - Booleans are 'flattened' correctly (path, siblings and value)
         - Fingerprint matches with pre-verified fingerprint"""
         bool_val = True
-        bool_out_raw = _jfpv1._flatten_json(data=bool_val)
+        bool_out_raw = _jfpv1._flatten_json(data=bool_val, hash_function='sha256')
         expected_bool_out_raw = [{'path': '', 'value': bool_val}]
         self.assertEqual(bool_out_raw, expected_bool_out_raw)
 
@@ -225,7 +225,7 @@ class TestJfpv1(unittest.TestCase):
         - Booleans are 'flattened' correctly (path, siblings and value)
         - Fingerprint matches with pre-verified fingerprint"""
         none_val = None
-        none_out_raw = _jfpv1._flatten_json(data=none_val)
+        none_out_raw = _jfpv1._flatten_json(data=none_val, hash_function='sha256')
         expected_bool_out_raw = [{'path': '', 'value': none_val}]
         self.assertEqual(none_out_raw, expected_bool_out_raw)
 

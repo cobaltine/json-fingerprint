@@ -3,7 +3,7 @@
 ![](https://img.shields.io/github/license/cobaltine/json-fingerprint) ![](https://img.shields.io/pypi/pyversions/json-fingerprint) ![](https://img.shields.io/github/workflow/status/cobaltine/json-fingerprint/Test%20runner/main) ![](https://img.shields.io/github/workflow/status/cobaltine/json-fingerprint/Release%20Python%20package/main?label=pypi%20release) [![](https://img.shields.io/pypi/v/json-fingerprint)](https://pypi.org/project/json-fingerprint/) ![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/cobaltine/json-fingerprint) [![Coverage Status](https://coveralls.io/repos/github/cobaltine/json-fingerprint/badge.svg?branch=main)](https://coveralls.io/github/cobaltine/json-fingerprint?branch=main)
 
 
-Create consistent and comparable fingerprints (checksums/hashes) from unordered JSON data.
+Create consistent and comparable fingerprints with secure hashes from unordered JSON data.
 
 A json fingerprint consists of three parts: the version of the underlying algorithm, the hash function used and a hex digest of the hash function output. A complete example could look like this: `jfpv1$sha256$5815eb0ce6f4e5ab0a771cce2a8c5432f64222f8fd84b4cc2d38e4621fae86af`.
 
@@ -16,18 +16,19 @@ This is a list of high-level development and documentation tasks, which need to 
 
 - [ ] Formalized the jfpv1 specification
 - [x] JSON type support
-  - [x] Primitive types (int/float, str, bool, None)
-  - [x] Arrays (list)
-  - [x] Objects (dict)
+  - [x] Primitives and literals
+  - [x] Arrays
+  - [x] Objects
 - [x] Flattened "sibling-aware" internal data structure
 - [x] Support nested JSON data structures with mixed types
-- [ ] Support most common SHA-2 hash functions
+- [x] Support most common SHA-2 hash functions
   - [x] SHA256
-  - [ ] SHA384
-  - [ ] SHA512
+  - [x] SHA384
+  - [x] SHA512
 - [ ] Dynamic jfpv1 fingerprint comparison function (JSON string against a fingerprint)
 - [x] Performance characteristics that scale sufficiently
 - [ ] Extensive verification against potential fingerprint (hash) collisions
+
 
 ## Installation
 
