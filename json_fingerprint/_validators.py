@@ -1,3 +1,16 @@
+import re
+
+from ._exceptions import (
+    FingerprintHashFunctionError,
+    FingerprintInputDataTypeError,
+    FingerprintStringFormatError,
+    FingerprintVersionError,
+)
+
+SHA256_JFP_REGEX_PATTERN = re.compile('^jfpv1\\$sha256\\$[0-9a-f]{64}$')
+SHA384_JFP_REGEX_PATTERN = re.compile('^jfpv1\\$sha384\\$[0-9a-f]{96}$')
+SHA512_JFP_REGEX_PATTERN = re.compile('^jfpv1\\$sha512\\$[0-9a-f]{128}$')
+
 JFPV1_HASH_FUNCTIONS = (
     'sha256',
     'sha384',
@@ -7,18 +20,6 @@ JFPV1_HASH_FUNCTIONS = (
 JSON_FINGERPRINT_VERSIONS = (
     1,
 )
-
-
-class FingerprintHashFunctionError(Exception):
-    pass
-
-
-class FingerprintInputDataTypeError(Exception):
-    pass
-
-
-class FingerprintVersionError(Exception):
-    pass
 
 
 def _validate_hash_function(hash_function: str, version: int):
@@ -39,3 +40,17 @@ def _validate_version(version: int):
         err = (f'Expected one of supported JSON fingerprint versions \'{JSON_FINGERPRINT_VERSIONS}\', '
                f'instead got \'{version}\'')
         raise FingerprintVersionError(err)
+
+
+def _validate_fingerprint_format(fingerprint: str):
+    is_valid = False
+
+    if SHA256_JFP_REGEX_PATTERN.match(fingerprint) or \
+            SHA384_JFP_REGEX_PATTERN.match(fingerprint) or \
+            SHA512_JFP_REGEX_PATTERN.match(fingerprint):
+        is_valid = True
+
+    if not is_valid:
+        err = ('Expected JSON fingerprint in format \'{fingerprint_version}${hash_function}${hex_digest}\', instead got: '
+               f'{fingerprint}')
+        raise FingerprintStringFormatError(err)
