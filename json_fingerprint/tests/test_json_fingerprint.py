@@ -3,7 +3,7 @@ import os
 import unittest
 
 from json_fingerprint import json_fingerprint
-from json_fingerprint.json_fingerprint import FingerprintJSONLoadError
+from json_fingerprint._exceptions import FingerprintJSONLoadError
 
 TESTS_DIR = os.path.dirname(__file__)
 TESTDATA_DIR = os.path.join(TESTS_DIR, 'testdata')

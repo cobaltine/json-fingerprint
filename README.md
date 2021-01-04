@@ -25,7 +25,7 @@ This is a list of high-level development and documentation tasks, which need to 
   - [x] SHA256
   - [x] SHA384
   - [x] SHA512
-- [ ] Dynamic jfpv1 fingerprint comparison function (JSON string against a fingerprint)
+- [x] Dynamic jfpv1 fingerprint comparison function (JSON string against a fingerprint)
 - [x] Performance characteristics that scale sufficiently
 - [ ] Extensive verification against potential fingerprint (hash) collisions
 
@@ -37,24 +37,73 @@ To install the json-fingerprint package, run `pip install json-fingerprint`.
 
 ## Examples
 
-The example below shows how to create and compare json fingerprints.
+The complete working examples below show how to create and compare JSON fingerprints.
+
+### Creating fingerprints from JSON data
+
+Fingerprints can be created with the `json_fingerprint()` function, which requires three arguments: input (valid JSON string), hash function (`sha256`, `sha384` and `sha512` are supported) and JSON fingerprint version (`1`).
 
 ```python
 import json
-import json_fingerprint as jfp
 
-obj_1_str = json.dumps([3, 2, 1, {'foo': 'bar'}])
-obj_2_str = json.dumps([2, {'foo': 'bar'}, 1, 3])  # Same data in different order
-fp_1 = jfp.json_fingerprint(input=obj_1_str, hash_function='sha256', version=1)
-fp_2 = jfp.json_fingerprint(input=obj_2_str, hash_function='sha256', version=1)
+from json_fingerprint import json_fingerprint
+
+obj_1_str = json.dumps([3, 2, 1, [True, False], {'foo': 'bar'}])
+obj_2_str = json.dumps([2, {'foo': 'bar'}, 1, [False, True], 3])  # Same data in different order
+fp_1 = json_fingerprint(input=obj_1_str, hash_function='sha256', version=1)
+fp_2 = json_fingerprint(input=obj_2_str, hash_function='sha256', version=1)
 print(f'Fingerprint 1: {fp_1}')
 print(f'Fingerprint 2: {fp_2}')
 ```
 This will output two identical fingerprints regardless of the different order of the json elements:
 
 ```
-Fingerprint 1: jfpv1$sha256$f4a2c8bfb5a03da86bbb4e1639ca6b56f9fac6b04c5c7d9e3470afef46cefb4f
-Fingerprint 2: jfpv1$sha256$f4a2c8bfb5a03da86bbb4e1639ca6b56f9fac6b04c5c7d9e3470afef46cefb4f
+Fingerprint 1: jfpv1$sha256$164e2e93056b7a0e4ace25b3c9aed9cf061f9a23c48c3d88a655819ac452b83a
+Fingerprint 2: jfpv1$sha256$164e2e93056b7a0e4ace25b3c9aed9cf061f9a23c48c3d88a655819ac452b83a
 ```
 
 Since json objects with identical data content and structure will always produce identical fingerprints, the fingerprints can be used effectively for various purposes. These include finding duplicate json data from a larger dataset, json data cache validation/invalidation and data integrity checking.
+
+### Decoding JSON fingerprints
+
+JSON fingerprints can be decoded with the `decode_fingerprint()` convenience function, which returns the version, hash function and hash in a tuple.
+
+```python
+from json_fingerprint import decode_fingerprint
+
+fingerprint = 'jfpv1$sha256$164e2e93056b7a0e4ace25b3c9aed9cf061f9a23c48c3d88a655819ac452b83a'
+version, hash_function, hash = decode_fingerprint(fingerprint=fingerprint)
+print(f'Version (integer): {version}')
+print(f'Hash function: {hash_function}')
+print(f'Hash: {hash}')
+```
+This will output the individual elements that make up a fingerprint as follows:
+
+```
+Version (integer): 1
+Hash function: sha256
+Hash: 164e2e93056b7a0e4ace25b3c9aed9cf061f9a23c48c3d88a655819ac452b83a
+```
+
+### Fingerprint matching
+
+The `fingerprint_match()` is another convenience function that matches JSON data against a fingerprint, and returns either `True` or `False` depending on whether the data matches the fingerprint or not. Internally, it will automatically choose the correct version and hash function based on the `target_fingerprint` argument.
+
+```python
+import json
+
+from json_fingerprint import fingerprint_match
+
+input_1 = json.dumps([3, 2, 1, [True, False], {'foo': 'bar'}])
+input_2 = json.dumps([3, 2, 1])
+target_fingerprint = 'jfpv1$sha256$164e2e93056b7a0e4ace25b3c9aed9cf061f9a23c48c3d88a655819ac452b83a'
+match_1 = fingerprint_match(input=input_1, target_fingerprint=target_fingerprint)
+match_2 = fingerprint_match(input=input_2, target_fingerprint=target_fingerprint)
+print(f'Fingerprint matches with input_1: {match_1}')
+print(f'Fingerprint matches with input_2: {match_2}')
+```
+This will output the following:
+```
+Fingerprint matches with input_1: True
+Fingerprint matches with input_2: False
+```

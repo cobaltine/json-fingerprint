@@ -1,7 +1,8 @@
 import hashlib
 import json
-from json_fingerprint import _jfpv1
 import unittest
+
+from json_fingerprint import _jfpv1
 
 
 class TestJfpv1(unittest.TestCase):
