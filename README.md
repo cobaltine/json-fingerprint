@@ -10,6 +10,17 @@ A json fingerprint consists of three parts: the version of the underlying algori
 The first part indicates the algorithm version, `jfpv1`, which would translate to **j**son **f**inger**p**rint **v**ersion **1**. The second part, `sha256`, indicates that SHA256 is the hash function that was used. The last part, `5815eb0ce6f4e5ab0a771cce2a8c5432f64222f8fd84b4cc2d38e4621fae86af`, is a standard hex digest of the hash function output.
 
 
+<!-- TOC titleSize:2 tabSpaces:2 depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 skip:0 title:1 charForUnorderedList:* -->
+## Table of Contents
+* [v1 release checklist (jfpv1)](#v1-release-checklist-jfpv1)
+* [Installation](#installation)
+* [Examples](#examples)
+  * [Creating fingerprints from JSON data](#creating-fingerprints-from-json-data)
+  * [Decoding JSON fingerprints](#decoding-json-fingerprints)
+  * [Fingerprint matching](#fingerprint-matching)
+<!-- /TOC -->
+
+
 ## v1 release checklist (jfpv1)
 
 This is a list of high-level development and documentation tasks, which need to be completed prior to freezing the API for v1. Prior to v1, backwards-incompatible changes are possible.
@@ -39,6 +50,7 @@ To install the json-fingerprint package, run `pip install json-fingerprint`.
 
 The complete working examples below show how to create and compare JSON fingerprints.
 
+
 ### Creating fingerprints from JSON data
 
 Fingerprints can be created with the `json_fingerprint()` function, which requires three arguments: input (valid JSON string), hash function (`sha256`, `sha384` and `sha512` are supported) and JSON fingerprint version (`1`).
@@ -64,6 +76,7 @@ Fingerprint 2: jfpv1$sha256$164e2e93056b7a0e4ace25b3c9aed9cf061f9a23c48c3d88a655
 
 Since json objects with identical data content and structure will always produce identical fingerprints, the fingerprints can be used effectively for various purposes. These include finding duplicate json data from a larger dataset, json data cache validation/invalidation and data integrity checking.
 
+
 ### Decoding JSON fingerprints
 
 JSON fingerprints can be decoded with the `decode_fingerprint()` convenience function, which returns the version, hash function and hash in a tuple.
@@ -84,6 +97,7 @@ Version (integer): 1
 Hash function: sha256
 Hash: 164e2e93056b7a0e4ace25b3c9aed9cf061f9a23c48c3d88a655819ac452b83a
 ```
+
 
 ### Fingerprint matching
 
