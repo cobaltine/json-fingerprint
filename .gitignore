@@ -18,3 +18,4 @@
 !LICENSE
 !requirements*.in
 !requirements*.txt
+!MANIFEST.in

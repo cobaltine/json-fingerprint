@@ -1,0 +1,1 @@
+recursive-include json_fingerprint/tests/testdata *.json
