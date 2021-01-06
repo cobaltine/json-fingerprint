@@ -7,7 +7,7 @@ from ._validators import (
 )
 
 
-def json_fingerprint(input: str, hash_function: str, version: int) -> str:
+def create(input: str, hash_function: str, version: int) -> str:
     """Create json fingerprints with the selected hash function and jfp version."""
     _validate_version(version=version)
     _validate_input_type(input=input)

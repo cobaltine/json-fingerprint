@@ -2,7 +2,7 @@ from typing import Tuple
 from ._validators import _validate_fingerprint_format
 
 
-def decode_fingerprint(fingerprint: str) -> Tuple[int, str, str]:
+def decode(fingerprint: str) -> Tuple[int, str, str]:
     """Decode json fingerprints into version, hash function and hash values."""
     _validate_fingerprint_format(fingerprint)
     elements = fingerprint.split('$')
