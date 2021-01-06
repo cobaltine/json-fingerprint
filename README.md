@@ -22,6 +22,7 @@ A JSON fingerprint consists of three parts: the version of the underlying canoni
   * [Create JSON fingerprints](#create-json-fingerprints)
   * [Decode JSON fingerprints](#decode-json-fingerprints)
   * [Match fingerprints](#match-fingerprints)
+  * [Find matches in fingerprint lists](#find-matches-in-fingerprint-lists)
 * [JSON normalization](#json-normalization)
   * [Alternative specifications](#alternative-specifications)
   * [JSON Fingerprint v1 (jfpv1)](#json-fingerprint-v1-jfpv1)
@@ -68,7 +69,7 @@ import json
 import json_fingerprint
 
 input_1 = json.dumps([3, 2, 1, [True, False], {'foo': 'bar'}])
-input_2 = json.dumps([2, {'foo': 'bar'}, 1, [False, True], 3])  # Same data, different order
+input_2 = json.dumps([2, {'foo': 'bar'}, 1, [False, True], 3])  # Different order
 fp_1 = json_fingerprint.create(input=input_1, hash_function='sha256', version=1)
 fp_2 = json_fingerprint.create(input=input_2, hash_function='sha256', version=1)
 print(f'Fingerpr. 1: {fp_1}')
@@ -86,7 +87,7 @@ Since JSON objects with identical data content and structure will always produce
 
 ### Decode JSON fingerprints
 
-JSON fingerprints can be decoded with the `decode_fingerprint()` convenience function. It returns the version, hash function and secure hash in a tuple.
+JSON fingerprints can be decoded with the `decode()` convenience function. It returns the version, hash function and secure hash in a tuple.
 
 ```python
 import json_fingerprint
@@ -108,7 +109,7 @@ Secure hash: 164e2e93056b7a0e4ace25b3c9aed9cf061f9a23c48c3d88a655819ac452b83a
 
 ### Match fingerprints
 
-The `fingerprint_match()` is another convenience function that matches JSON data against a fingerprint, and returns either `True` or `False` depending on whether the data matches the fingerprint or not. Internally, it will automatically choose the correct version and hash function based on the `target_fingerprint` argument.
+The `match()` is another convenience function that matches JSON data against a fingerprint, and returns either `True` or `False` depending on whether the data matches the fingerprint or not. Internally, it will automatically choose the correct version and hash function based on the `target_fingerprint` argument.
 
 ```python
 import json
@@ -128,6 +129,47 @@ Fingerprint matches with input_1: True
 Fingerprint matches with input_2: False
 ```
 
+
+### Find matches in fingerprint lists
+
+The `find_matches()` function takes a JSON string and a list of JSON fingerprints as input. It creates a fingerprint of the JSON input string of each different variant in the target list, and looks for matches in the fingerprint list. It can optionally also deduplicate the fingerprint input list, and results list.
+
+```python
+import json
+import json_fingerprint
+
+# Produces SHA256: jfpv1$sha256$e69b883d...776bea81
+# Produces SHA384: jfpv1$sha384$a07e46e3...3e7fa666
+input = json.dumps({'foo': 'bar'})
+fingerprints = [
+    # SHA256 match
+    'jfpv1$sha256$e69b883d4c554035eea01e8817285659f64f8345a12768cc2782fe29776bea81',
+    # SHA256 match (duplicate)
+    'jfpv1$sha256$e69b883d4c554035eea01e8817285659f64f8345a12768cc2782fe29776bea81',
+    # SHA384 match
+    ('jfpv1$sha384$a07e4e7a13224f7bd1b80616f8874bda3fb4d18c52f5643fb1c9d5a7665a1d9'
+     '69412bb9bcc7c6e30cedca4953e7fa666'),
+    # Not a match
+    'jfpv1$sha256$73f7bb145f268c033ec22a0b74296cdbab1405415a3d64a1c79223aa9a9f7643',
+]
+matches = json_fingerprint.find_matches(input=input, fingerprints=fingerprints)
+# Print raw matches, which include 2 same SHA256 fingerprints
+print(*(f'\nMatch: {match[0:30]}...' for match in matches))
+deduplicated_matches = json_fingerprint.find_matches(input=input,
+                                                     fingerprints=fingerprints,
+                                                     deduplicate=True)
+# Print deduplicated matches
+print(*(f'\nDeduplicated match: {match[0:30]}...' for match in deduplicated_matches))
+```
+This will output the following results, first the list with a duplicate and the latter with deduplicated results:
+```
+Match: jfpv1$sha256$e69b883d4c554035e...
+Match: jfpv1$sha256$e69b883d4c554035e...
+Match: jfpv1$sha384$a07e4e7a13224f7bd...
+
+Deduplicated match: jfpv1$sha384$a07e4e7a13224f7bd...
+Deduplicated match: jfpv1$sha256$e69b883d4c554035e...
+```
 
 ## JSON normalization
 
@@ -159,9 +201,9 @@ The entire internal test suite of json-fingerprint is included in its distributi
 If all tests ran successfully, this will produce an output similar to the following:
 
 ```
-.......................
+..........................
 ----------------------------------------------------------------------
-Ran 23 tests in 0.008s
+Ran 26 tests in 0.009s
 
 OK
 ```

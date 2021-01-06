@@ -8,8 +8,8 @@ from json_fingerprint import (
 )
 
 
-class TestDecodeFingerprint(unittest.TestCase):
-    def test_decode_fingerprint(self):
+class TestDecode(unittest.TestCase):
+    def test_jfpv1_decode(self):
         """Test json fingerprint decoder.
 
         Verify that:
