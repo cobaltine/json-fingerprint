@@ -9,7 +9,7 @@ TESTS_DIR = os.path.dirname(__file__)
 TESTDATA_DIR = os.path.join(TESTS_DIR, 'testdata')
 
 
-class TestJsonFingerprint(unittest.TestCase):
+class TestCreate(unittest.TestCase):
     def test_jfpv1_json_load_error(self):
         """Test json fingerprint raw json string load error.
 
