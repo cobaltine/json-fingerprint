@@ -4,7 +4,7 @@ import unittest
 from json_fingerprint import (
     _exceptions,
     _validators,
-    json_fingerprint,
+    create,
 )
 
 
@@ -16,7 +16,7 @@ class TestValidators(unittest.TestCase):
         - FingerprintVersionError is properly raised with an unsupported version
         - FingerprintVersionError is not raised with a supported version"""
         with self.assertRaises(_exceptions.FingerprintVersionError):
-            json_fingerprint(input=json.dumps({'foo': 'bar'}), hash_function='sha256', version=-1)
+            create(input=json.dumps({'foo': 'bar'}), hash_function='sha256', version=-1)
 
         try:
             _validators._validate_version(version=1)
@@ -34,7 +34,7 @@ class TestValidators(unittest.TestCase):
         - FingerprintInputDataTypeError is properly raised with a non-string input
         - FingerprintInputDataTypeError is not raised with a string input"""
         with self.assertRaises(_exceptions.FingerprintInputDataTypeError):
-            json_fingerprint(input=123, hash_function='sha256', version=1)
+            create(input=123, hash_function='sha256', version=1)
 
         try:
             _validators._validate_input_type(input='abc')
@@ -52,7 +52,7 @@ class TestValidators(unittest.TestCase):
         - FingerprintHashFunctionError is properly raised with an unsupported hash function selector
         - FingerprintHashFunctionError is not raised with a supported hash function selector"""
         with self.assertRaises(_exceptions.FingerprintHashFunctionError):
-            json_fingerprint(input=json.dumps(
+            create(input=json.dumps(
                 {'foo': 'bar'}), hash_function='not123', version=1)
 
         try:
@@ -74,9 +74,9 @@ class TestValidators(unittest.TestCase):
             _validators._validate_fingerprint_format(fingerprint='invalid fingerprint')
 
         input = json.dumps({'foo': 'bar'})
-        jfpv1_sha256 = json_fingerprint(input=input, hash_function='sha256', version=1)
-        jfpv1_sha384 = json_fingerprint(input=input, hash_function='sha384', version=1)
-        jfpv1_sha512 = json_fingerprint(input=input, hash_function='sha512', version=1)
+        jfpv1_sha256 = create(input=input, hash_function='sha256', version=1)
+        jfpv1_sha384 = create(input=input, hash_function='sha384', version=1)
+        jfpv1_sha512 = create(input=input, hash_function='sha512', version=1)
 
         try:
             _validators._validate_fingerprint_format(fingerprint=jfpv1_sha256)

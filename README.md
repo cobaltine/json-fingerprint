@@ -1,13 +1,17 @@
 # json-fingerprint
 
-![](https://img.shields.io/github/license/cobaltine/json-fingerprint) ![](https://img.shields.io/pypi/pyversions/json-fingerprint) ![](https://img.shields.io/github/workflow/status/cobaltine/json-fingerprint/Test%20runner/main) ![](https://img.shields.io/github/workflow/status/cobaltine/json-fingerprint/Release%20Python%20package/main?label=pypi%20release) [![](https://img.shields.io/pypi/v/json-fingerprint)](https://pypi.org/project/json-fingerprint/) ![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/cobaltine/json-fingerprint) [![Coverage Status](https://coveralls.io/repos/github/cobaltine/json-fingerprint/badge.svg?branch=main)](https://coveralls.io/github/cobaltine/json-fingerprint?branch=main)
+![](https://img.shields.io/github/license/cobaltine/json-fingerprint) ![](https://img.shields.io/pypi/pyversions/json-fingerprint) ![](https://img.shields.io/github/workflow/status/cobaltine/json-fingerprint/Test%20runner/main?label=ci) ![](https://img.shields.io/github/workflow/status/cobaltine/json-fingerprint/Release%20Python%20package/main?label=cd) [![](https://img.shields.io/pypi/v/json-fingerprint)](https://pypi.org/project/json-fingerprint/) ![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/cobaltine/json-fingerprint) [![Coverage Status](https://coveralls.io/repos/github/cobaltine/json-fingerprint/badge.svg?branch=main)](https://coveralls.io/github/cobaltine/json-fingerprint?branch=main)
 
 
 Create consistent and comparable fingerprints with secure hashes from unordered JSON data.
 
-A json fingerprint consists of three parts: the version of the underlying algorithm, the hash function used and a hex digest of the hash function output. A complete example could look like this: `jfpv1$sha256$5815eb0ce6f4e5ab0a771cce2a8c5432f64222f8fd84b4cc2d38e4621fae86af`.
+A JSON fingerprint consists of three parts: the version of the underlying canonicalization algorithm, the hash function used and a hexadecimal digest of the hash function output. A complete example could look like this: `jfpv1$sha256$5815eb0ce6f4e5ab0a771cce2a8c5432f64222f8fd84b4cc2d38e4621fae86af`.
 
-The first part indicates the algorithm version, `jfpv1`, which would translate to **j**son **f**inger**p**rint **v**ersion **1**. The second part, `sha256`, indicates that SHA256 is the hash function that was used. The last part, `5815eb0ce6f4e5ab0a771cce2a8c5432f64222f8fd84b4cc2d38e4621fae86af`, is a standard hex digest of the hash function output.
+| Fingerprint element | Description                                                                         |
+|:--------------------|:------------------------------------------------------------------------------------|
+| jfpv1               | JSON fingerprint version identifier: **j**son **f**inger**p**rint **v**ersion **1** |
+| sha256              | Hash function identifier (sha256, sha384 or sha512)                                 |
+| 5815eb0c...1fae86af | The secure hash function output in hexadecimal format                               |
 
 
 <!-- TOC titleSize:2 tabSpaces:2 depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 skip:0 title:1 charForUnorderedList:* -->
@@ -15,15 +19,19 @@ The first part indicates the algorithm version, `jfpv1`, which would translate t
 * [v1 release checklist (jfpv1)](#v1-release-checklist-jfpv1)
 * [Installation](#installation)
 * [Examples](#examples)
-  * [Creating fingerprints from JSON data](#creating-fingerprints-from-json-data)
-  * [Decoding JSON fingerprints](#decoding-json-fingerprints)
-  * [Fingerprint matching](#fingerprint-matching)
+  * [Create JSON fingerprints](#create-json-fingerprints)
+  * [Decode JSON fingerprints](#decode-json-fingerprints)
+  * [Match fingerprints](#match-fingerprints)
+* [JSON normalization](#json-normalization)
+  * [Alternative specifications](#alternative-specifications)
+  * [JSON Fingerprint v1 (jfpv1)](#json-fingerprint-v1-jfpv1)
+* [Running tests](#running-tests)
 <!-- /TOC -->
 
 
 ## v1 release checklist (jfpv1)
 
-This is a list of high-level development and documentation tasks, which need to be completed prior to freezing the API for v1. Prior to v1, backwards-incompatible changes are possible.
+This is a list of high-level development and documentation tasks, which need to be completed prior to freezing the API for v1. Before v1, backwards-incompatible changes to the API are possible, although not likely since v0.10.0.
 
 - [ ] Formalized the jfpv1 specification
 - [x] JSON type support
@@ -48,71 +56,69 @@ To install the json-fingerprint package, run `pip install json-fingerprint`.
 
 ## Examples
 
-The complete working examples below show how to create and compare JSON fingerprints.
+The complete working examples below show how to use all core features of the `json_fingerprint` package.
 
 
-### Creating fingerprints from JSON data
+### Create JSON fingerprints
 
-Fingerprints can be created with the `json_fingerprint()` function, which requires three arguments: input (valid JSON string), hash function (`sha256`, `sha384` and `sha512` are supported) and JSON fingerprint version (`1`).
+JSON fingerprints can be created with the `create()` function, which requires three arguments: input (valid JSON string), hash function (SHA256, SHA384 and SHA512 are supported) and JSON fingerprint version (1).
 
 ```python
 import json
+import json_fingerprint
 
-from json_fingerprint import json_fingerprint
-
-obj_1_str = json.dumps([3, 2, 1, [True, False], {'foo': 'bar'}])
-obj_2_str = json.dumps([2, {'foo': 'bar'}, 1, [False, True], 3])  # Same data in different order
-fp_1 = json_fingerprint(input=obj_1_str, hash_function='sha256', version=1)
-fp_2 = json_fingerprint(input=obj_2_str, hash_function='sha256', version=1)
-print(f'Fingerprint 1: {fp_1}')
-print(f'Fingerprint 2: {fp_2}')
+input_1 = json.dumps([3, 2, 1, [True, False], {'foo': 'bar'}])
+input_2 = json.dumps([2, {'foo': 'bar'}, 1, [False, True], 3])  # Same data, different order
+fp_1 = json_fingerprint.create(input=input_1, hash_function='sha256', version=1)
+fp_2 = json_fingerprint.create(input=input_2, hash_function='sha256', version=1)
+print(f'Fingerpr. 1: {fp_1}')
+print(f'Fingerpr. 2: {fp_2}')
 ```
 This will output two identical fingerprints regardless of the different order of the json elements:
 
 ```
-Fingerprint 1: jfpv1$sha256$164e2e93056b7a0e4ace25b3c9aed9cf061f9a23c48c3d88a655819ac452b83a
-Fingerprint 2: jfpv1$sha256$164e2e93056b7a0e4ace25b3c9aed9cf061f9a23c48c3d88a655819ac452b83a
+Fingerpr. 1: jfpv1$sha256$164e2e93056b7a0e4ace25b3c9aed9cf061f9a23c48c3d88a655819ac452b83a
+Fingerpr. 2: jfpv1$sha256$164e2e93056b7a0e4ace25b3c9aed9cf061f9a23c48c3d88a655819ac452b83a
 ```
 
-Since json objects with identical data content and structure will always produce identical fingerprints, the fingerprints can be used effectively for various purposes. These include finding duplicate json data from a larger dataset, json data cache validation/invalidation and data integrity checking.
+Since JSON objects with identical data content and structure will always produce identical fingerprints, the fingerprints can be used effectively for various purposes. These include finding duplicate JSON data from a larger dataset, JSON data cache validation/invalidation and data integrity checking.
 
 
-### Decoding JSON fingerprints
+### Decode JSON fingerprints
 
-JSON fingerprints can be decoded with the `decode_fingerprint()` convenience function, which returns the version, hash function and hash in a tuple.
+JSON fingerprints can be decoded with the `decode_fingerprint()` convenience function. It returns the version, hash function and secure hash in a tuple.
 
 ```python
-from json_fingerprint import decode_fingerprint
+import json_fingerprint
 
-fingerprint = 'jfpv1$sha256$164e2e93056b7a0e4ace25b3c9aed9cf061f9a23c48c3d88a655819ac452b83a'
-version, hash_function, hash = decode_fingerprint(fingerprint=fingerprint)
+fp = 'jfpv1$sha256$164e2e93056b7a0e4ace25b3c9aed9cf061f9a23c48c3d88a655819ac452b83a'
+version, hash_function, hash = json_fingerprint.decode(fingerprint=fp)
 print(f'Version (integer): {version}')
 print(f'Hash function: {hash_function}')
-print(f'Hash: {hash}')
+print(f'Secure hash: {hash}')
 ```
 This will output the individual elements that make up a fingerprint as follows:
 
 ```
 Version (integer): 1
 Hash function: sha256
-Hash: 164e2e93056b7a0e4ace25b3c9aed9cf061f9a23c48c3d88a655819ac452b83a
+Secure hash: 164e2e93056b7a0e4ace25b3c9aed9cf061f9a23c48c3d88a655819ac452b83a
 ```
 
 
-### Fingerprint matching
+### Match fingerprints
 
 The `fingerprint_match()` is another convenience function that matches JSON data against a fingerprint, and returns either `True` or `False` depending on whether the data matches the fingerprint or not. Internally, it will automatically choose the correct version and hash function based on the `target_fingerprint` argument.
 
 ```python
 import json
-
-from json_fingerprint import fingerprint_match
+import json_fingerprint
 
 input_1 = json.dumps([3, 2, 1, [True, False], {'foo': 'bar'}])
 input_2 = json.dumps([3, 2, 1])
-target_fingerprint = 'jfpv1$sha256$164e2e93056b7a0e4ace25b3c9aed9cf061f9a23c48c3d88a655819ac452b83a'
-match_1 = fingerprint_match(input=input_1, target_fingerprint=target_fingerprint)
-match_2 = fingerprint_match(input=input_2, target_fingerprint=target_fingerprint)
+target_fp = 'jfpv1$sha256$164e2e93056b7a0e4ace25b3c9aed9cf061f9a23c48c3d88a655819ac452b83a'
+match_1 = json_fingerprint.match(input=input_1, target_fingerprint=target_fp)
+match_2 = json_fingerprint.match(input=input_2, target_fingerprint=target_fp)
 print(f'Fingerprint matches with input_1: {match_1}')
 print(f'Fingerprint matches with input_2: {match_2}')
 ```
@@ -120,4 +126,42 @@ This will output the following:
 ```
 Fingerprint matches with input_1: True
 Fingerprint matches with input_2: False
+```
+
+
+## JSON normalization
+
+The jfpv1 JSON fingerprint function transforms the data internally into a normalized (canonical) format before hashing the output.
+
+### Alternative specifications
+
+Most existing JSON normalization/canonicalization specifications and related implementations operate on three key aspects: data structures, values and data ordering. While the ordering of key-value pairs (objects) is straightforward, issues usually arise from the ordering of arrays.
+
+The JSON specifications, including the most recent [RFC 8259](https://tools.ietf.org/html/rfc8259), have always considered the order of array elements to be _meaningful_. As data gets serialized, transferred, deserialized and serialized again throughout various systems, maintaining the order of array elements becomes impractical if not impossible in many cases. As a consequence, this makes the creation and comparison of secure hashes of JSON data across multiple systems a complex process.
+
+### JSON Fingerprint v1 (jfpv1)
+
+The jfpv1 specification takes a more _value-oriented_ approach toward JSON normalization and secure hash creation: values and value-related metadata bear most significance when JSON data gets normalized into the jfpv1 format. The original JSON data gets transformed into a flattened list of small objects, which are then hashed and sorted, and ultimately hashed again as a whole.
+
+In practice, the jfpv1 specification purposefully ignores the original order of data elements in an array. The jfpv1 specification focuses instead on verifying that the following aspects of JSON datasets being compared match:
+
+ * All values in the compared datasets are identical
+ * The values exist in identical paths (arrays, object key-value pairs)
+
+In the case of arrays, each array gets a unique hash identifier based on the data elements it holds. This way, each flattened value "knows" to which array it belongs to. This identifier is called a _sibling hash_ because its derived from each value and its neighboring values.
+
+## Running tests
+
+The entire internal test suite of json-fingerprint is included in its distribution package. If you wish to run the internal test suite, install the package and run the following command:
+
+`python -m json_fingerprint.tests.run`
+
+If all tests ran successfully, this will produce an output similar to the following:
+
+```
+.......................
+----------------------------------------------------------------------
+Ran 23 tests in 0.008s
+
+OK
 ```
