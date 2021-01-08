@@ -10,7 +10,15 @@ from typing import (
 
 def _create_json_hash(data: Any, hash_function: str) -> str:
     """Create an sha256 hash from json-converted data, sorted by key names."""
-    stringified = json.dumps(data, sort_keys=True)
+    stringified = json.dumps(
+        data,
+        allow_nan=False,
+        ensure_ascii=False,
+        indent=None,
+        separators=(',', ':'),
+        skipkeys=False,
+        sort_keys=True,
+    )
     if hash_function == 'sha256':
         m = hashlib.sha256()
     if hash_function == 'sha384':

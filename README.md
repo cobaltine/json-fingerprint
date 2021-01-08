@@ -32,7 +32,7 @@ A JSON fingerprint consists of three parts: the version of the underlying canoni
 
 ## v1 release checklist (jfpv1)
 
-This is a list of high-level development and documentation tasks, which need to be completed prior to freezing the API for v1. Before v1, backwards-incompatible changes to the API are possible, although not likely since v0.10.0.
+This is a list of high-level development and documentation tasks, which need to be completed prior to freezing the API for v1. Before v1, backwards-incompatible changes to the API are possible, although not likely from v0.10.0 onwards. Since the jfpv1 spec is work in progress, the fingerprints may not be fully comparable between different _0.y.z_ versions.
 
 - [ ] Formalized the jfpv1 specification
 - [x] JSON type support
