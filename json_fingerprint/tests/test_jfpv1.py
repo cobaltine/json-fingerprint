@@ -12,7 +12,15 @@ class TestJfpv1(unittest.TestCase):
         Verify that:
         - Key-value pairs are sorted properly and the resulting SHA256 matches the expected hash"""
         data = {'value': 'bar', 'path': '{foo}'}
-        stringified = json.dumps(data, sort_keys=True)
+        stringified = json.dumps(
+            data,
+            allow_nan=False,
+            ensure_ascii=False,
+            indent=None,
+            separators=(',', ':'),
+            skipkeys=False,
+            sort_keys=True,
+        )
         m = hashlib.sha256()
         m.update(stringified.encode('utf-8'))
         expected_hex_digest = m.hexdigest()

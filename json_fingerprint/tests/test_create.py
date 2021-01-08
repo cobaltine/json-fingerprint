@@ -58,7 +58,7 @@ class TestCreate(unittest.TestCase):
         fp_1 = create(self.test_obj_1, hash_function='sha256', version=1)
         fp_2 = create(self.test_obj_2, hash_function='sha256', version=1)
         self.assertEqual(fp_1, fp_2)
-        self.assertEqual(fp_1, 'jfpv1$sha256$0b83bd27ab1227c6da76dc161f4fb4559f1876eb7fb4cc6257e675c8b4175cbd')
+        self.assertEqual(fp_1, 'jfpv1$sha256$b182c755347a6884fd11f1194cbe0961f548e5ac62be78a56c48c3c05eb56650')
 
     def test_jfpv1_sha256_structural_distinction_1(self):
         """Test jfpv1 json flattener's structural value distinction.
