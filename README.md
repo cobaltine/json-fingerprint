@@ -78,8 +78,8 @@ print(f'Fingerpr. 2: {fp_2}')
 This will output two identical fingerprints regardless of the different order of the json elements:
 
 ```
-Fingerpr. 1: jfpv1$sha256$164e2e93056b7a0e4ace25b3c9aed9cf061f9a23c48c3d88a655819ac452b83a
-Fingerpr. 2: jfpv1$sha256$164e2e93056b7a0e4ace25b3c9aed9cf061f9a23c48c3d88a655819ac452b83a
+Fingerpr. 1: jfpv1$sha256$2ecb0c919fcb06024f55380134da3bbaac3879f98adce89a8871706fe50dda03
+Fingerpr. 2: jfpv1$sha256$2ecb0c919fcb06024f55380134da3bbaac3879f98adce89a8871706fe50dda03
 ```
 
 Since JSON objects with identical data content and structure will always produce identical fingerprints, the fingerprints can be used effectively for various purposes. These include finding duplicate JSON data from a larger dataset, JSON data cache validation/invalidation and data integrity checking.
@@ -92,7 +92,7 @@ JSON fingerprints can be decoded with the `decode()` convenience function. It re
 ```python
 import json_fingerprint
 
-fp = 'jfpv1$sha256$164e2e93056b7a0e4ace25b3c9aed9cf061f9a23c48c3d88a655819ac452b83a'
+fp = 'jfpv1$sha256$2ecb0c919fcb06024f55380134da3bbaac3879f98adce89a8871706fe50dda03'
 version, hash_function, hash = json_fingerprint.decode(fingerprint=fp)
 print(f'Version (integer): {version}')
 print(f'Hash function: {hash_function}')
@@ -117,7 +117,7 @@ import json_fingerprint
 
 input_1 = json.dumps([3, 2, 1, [True, False], {'foo': 'bar'}])
 input_2 = json.dumps([3, 2, 1])
-target_fp = 'jfpv1$sha256$164e2e93056b7a0e4ace25b3c9aed9cf061f9a23c48c3d88a655819ac452b83a'
+target_fp = 'jfpv1$sha256$2ecb0c919fcb06024f55380134da3bbaac3879f98adce89a8871706fe50dda03'
 match_1 = json_fingerprint.match(input=input_1, target_fingerprint=target_fp)
 match_2 = json_fingerprint.match(input=input_2, target_fingerprint=target_fp)
 print(f'Fingerprint matches with input_1: {match_1}')
@@ -138,18 +138,18 @@ The `find_matches()` function takes a JSON string and a list of JSON fingerprint
 import json
 import json_fingerprint
 
-# Produces SHA256: jfpv1$sha256$e69b883d...776bea81
-# Produces SHA384: jfpv1$sha384$a07e46e3...3e7fa666
+# Produces SHA256: jfpv1$sha256$d119f4d8...b1710d9f
+# Produces SHA384: jfpv1$sha384$9bca46fd...fd0e2e9c
 input = json.dumps({'foo': 'bar'})
 fingerprints = [
     # SHA256 match
-    'jfpv1$sha256$e69b883d4c554035eea01e8817285659f64f8345a12768cc2782fe29776bea81',
+    'jfpv1$sha256$d119f4d8b802091520162b78f57a995a9ecbc88b20573b0c7e474072b1710d9f',
     # SHA256 match (duplicate)
-    'jfpv1$sha256$e69b883d4c554035eea01e8817285659f64f8345a12768cc2782fe29776bea81',
+    'jfpv1$sha256$d119f4d8b802091520162b78f57a995a9ecbc88b20573b0c7e474072b1710d9f',
     # SHA384 match
-    ('jfpv1$sha384$a07e4e7a13224f7bd1b80616f8874bda3fb4d18c52f5643fb1c9d5a7665a1d9'
-     '69412bb9bcc7c6e30cedca4953e7fa666'),
-    # Not a match
+    ('jfpv1$sha384$9bca46fd7ef7aa2e16e68978b5eb5c294bd5b380780e81bcb1af97d4b339bca'
+     'f7f6a622b2f1a955eea2fadb8fd0e2e9c'),
+    # SHA256, not a match
     'jfpv1$sha256$73f7bb145f268c033ec22a0b74296cdbab1405415a3d64a1c79223aa9a9f7643',
 ]
 matches = json_fingerprint.find_matches(input=input, fingerprints=fingerprints)
@@ -163,12 +163,12 @@ print(*(f'\nDeduplicated match: {match[0:30]}...' for match in deduplicated_matc
 ```
 This will output the following results, first the list with a duplicate and the latter with deduplicated results:
 ```
-Match: jfpv1$sha256$e69b883d4c554035e...
-Match: jfpv1$sha256$e69b883d4c554035e...
-Match: jfpv1$sha384$a07e4e7a13224f7bd...
+Match: jfpv1$sha256$d119f4d8b80209152...
+Match: jfpv1$sha256$d119f4d8b80209152...
+Match: jfpv1$sha384$9bca46fd7ef7aa2e1...
 
-Deduplicated match: jfpv1$sha384$a07e4e7a13224f7bd...
-Deduplicated match: jfpv1$sha256$e69b883d4c554035e...
+Deduplicated match: jfpv1$sha384$9bca46fd7ef7aa2e1...
+Deduplicated match: jfpv1$sha256$d119f4d8b80209152...
 ```
 
 ## JSON normalization
