@@ -1,7 +1,11 @@
 # json-fingerprint
 
-![](https://img.shields.io/github/license/cobaltine/json-fingerprint) ![](https://img.shields.io/pypi/pyversions/json-fingerprint) ![](https://img.shields.io/github/workflow/status/cobaltine/json-fingerprint/Test%20runner/main?label=ci) ![](https://img.shields.io/github/workflow/status/cobaltine/json-fingerprint/Release%20Python%20package/main?label=cd) [![](https://img.shields.io/pypi/v/json-fingerprint)](https://pypi.org/project/json-fingerprint/) ![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/cobaltine/json-fingerprint) [![Coverage Status](https://coveralls.io/repos/github/cobaltine/json-fingerprint/badge.svg?branch=main)](https://coveralls.io/github/cobaltine/json-fingerprint?branch=main)
-
+![](https://img.shields.io/github/license/cobaltine/json-fingerprint)
+![](https://img.shields.io/pypi/pyversions/json-fingerprint)
+![](https://img.shields.io/github/actions/workflow/status/cobaltine/json-fingerprint/ci.yml?branch=main&label=build)
+[![](https://img.shields.io/pypi/v/json-fingerprint)](https://pypi.org/project/json-fingerprint/)
+![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/cobaltine/json-fingerprint)
+[![Coverage Status](https://coveralls.io/repos/github/cobaltine/json-fingerprint/badge.svg?branch=main)](https://coveralls.io/github/cobaltine/json-fingerprint?branch=main)
 
 Create consistent and comparable fingerprints with secure hashes from unordered JSON data.
 
