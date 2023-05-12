@@ -192,6 +192,34 @@ class TestJfpv1(unittest.TestCase):
         expected_bool_out_raw = [{"path": "", "value": none_val}]
         self.assertEqual(none_out_raw, expected_bool_out_raw)
 
+    def test_jfpv1_json_flattener_empty_list_handling(self):
+        """Test jfpv1 json flattener's ability to handle empty lists as values.
+
+        Versions up to v0.12.2 did not acknowledge empty lists as values.
+        Related issue: https://github.com/cobaltine/json-fingerprint/issues/33
+
+        Verify that:
+        - Empty lists are considered to be values"""
+
+        empty_list_val = []
+        empty_list_out_raw = _jfpv1._flatten_json(data=empty_list_val, hash_function="sha256")
+        expected_emtpy_list_out_raw = [{"path": "", "value": empty_list_val}]
+        self.assertEqual(empty_list_out_raw, expected_emtpy_list_out_raw)
+
+    def test_jfpv1_json_flattener_empty_dict_handling(self):
+        """Test jfpv1 json flattener's ability to handle empty dicts as values.
+
+        Versions up to v0.12.2 did not acknowledge empty dicts as values.
+        Related issue: https://github.com/cobaltine/json-fingerprint/issues/33
+
+        Verify that:
+        - Empty dicts are considered to be values"""
+
+        empty_dict_val = {}
+        empty_dict_out_raw = _jfpv1._flatten_json(data=empty_dict_val, hash_function="sha256")
+        expected_empty_dict_out_raw = [{"path": "", "value": empty_dict_val}]
+        self.assertEqual(empty_dict_out_raw, expected_empty_dict_out_raw)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -64,7 +64,7 @@ class TestCreate(unittest.TestCase):
         """Test jfpv1 json flattener's structural value distinction.
 
         Verify that:
-        - Identical value content in identical depths, but in different structures,
+        - Identical values at identical depths, but held in different data structures,
           don't produce identical outputs"""
         obj_in_1 = [
             1,
@@ -85,7 +85,7 @@ class TestCreate(unittest.TestCase):
         """Test jfpv1 json flattener's structural value distinction.
 
         Verify that:
-        - Values in identical paths/structures but different sibling values don't get matched"""
+        - Values in identical data structure paths, but different sibling values, don't get matched"""
         obj_in_1 = [
             [1, ["x", "x"]],
             [2, ["y", "y"]],
@@ -96,6 +96,40 @@ class TestCreate(unittest.TestCase):
             [1, ["x", "y"]],
             [2, ["x", "y"]],
         ]
+        fp_2 = create(input=json.dumps(obj_in_2), hash_function="sha256", version=1)
+
+        self.assertNotEqual(fp_1, fp_2)
+
+    def test_jfpv1_empty_list_as_value(self):
+        """Test jfpv1 json flattener's ability to handle empty lists as values.
+
+        Versions up to 0.12.2 did not acknowledge empty lists as values.
+        Related issue: https://github.com/cobaltine/json-fingerprint/issues/33
+
+        Verify that:
+        - Empty lists (and, as such, underlying data structure paths) are not ignored by the json flattener"""
+
+        obj_in_1 = {"field1": "yes"}
+        fp_1 = create(input=json.dumps(obj_in_1), hash_function="sha256", version=1)
+
+        obj_in_2 = {"field1": "yes", "field2": []}
+        fp_2 = create(input=json.dumps(obj_in_2), hash_function="sha256", version=1)
+
+        self.assertNotEqual(fp_1, fp_2)
+
+    def test_jfpv1_empty_dict_as_value(self):
+        """Test jfpv1 json flattener's ability to handle empty dicts as values.
+
+        Versions up to 0.12.2 did not acknowledge empty dicts as values.
+        Related issue: https://github.com/cobaltine/json-fingerprint/issues/33
+
+        Verify that:
+        - Empty dicts (and, as such, underlying data structure paths) are not ignored by the json flattener"""
+
+        obj_in_1 = {"field1": "yes"}
+        fp_1 = create(input=json.dumps(obj_in_1), hash_function="sha256", version=1)
+
+        obj_in_2 = {"field1": "yes", "field2": {}}
         fp_2 = create(input=json.dumps(obj_in_2), hash_function="sha256", version=1)
 
         self.assertNotEqual(fp_1, fp_2)
