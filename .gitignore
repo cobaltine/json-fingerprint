@@ -1,21 +1,22 @@
 # Ignore everything
 *
 
-# Whitelist only project files
-!.github/
-!**/workflows/
-!.gitignore
-!.flake8
-!.coveragerc
-!.version
-!*.json
-!*.yml
-!*.md
-!*.py
+# Include only project files
 !**/testdata/
 !**/tests/
-!json_fingerprint/
+!**/workflows/
+!*.json
+!*.md
+!*.py
+!*.yml
+!.coveragerc
+!.flake8
+!.github/
+!.gitignore
+!.version
 !LICENSE
+!MANIFEST.in
+!json_fingerprint/
+!pyproject.toml
 !requirements*.in
 !requirements*.txt
-!MANIFEST.in

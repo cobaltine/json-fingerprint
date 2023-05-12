@@ -1,3 +1,5 @@
-autopep8
+black
 coveralls
 flake8
+isort
+pip-tools

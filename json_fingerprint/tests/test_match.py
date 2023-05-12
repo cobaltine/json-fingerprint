@@ -1,11 +1,7 @@
 import json
 import unittest
 
-from json_fingerprint import (
-    _exceptions,
-    create,
-    match,
-)
+from json_fingerprint import _exceptions, create, match
 
 
 class TestMatch(unittest.TestCase):
@@ -15,10 +11,10 @@ class TestMatch(unittest.TestCase):
         Verify that:
         - Fingerprints of all jfpv1 SHA-2 variants are properly matched
         - Exceptions are properly raised with invalid fingerprints and input types"""
-        input = json.dumps({'foo': 'bar'})
-        jfpv1_sha256 = create(input=input, hash_function='sha256', version=1)
-        jfpv1_sha384 = create(input=input, hash_function='sha384', version=1)
-        jfpv1_sha512 = create(input=input, hash_function='sha512', version=1)
+        input = json.dumps({"foo": "bar"})
+        jfpv1_sha256 = create(input=input, hash_function="sha256", version=1)
+        jfpv1_sha384 = create(input=input, hash_function="sha384", version=1)
+        jfpv1_sha512 = create(input=input, hash_function="sha512", version=1)
 
         match_sha256 = match(input=input, target_fingerprint=jfpv1_sha256)
         self.assertEqual(match_sha256, True)
@@ -33,8 +29,8 @@ class TestMatch(unittest.TestCase):
         with self.assertRaises(_exceptions.FingerprintJSONLoadError):
             match(input='{"invalid": json string}', target_fingerprint=jfpv1_sha256)
         with self.assertRaises(_exceptions.FingerprintStringFormatError):
-            match(input=input, target_fingerprint='invalid fingerprint string')
+            match(input=input, target_fingerprint="invalid fingerprint string")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
