@@ -25,7 +25,7 @@ def _create_json_hash(data: Any, hash_function: str) -> str:
     return m.hexdigest()
 
 
-def _create_sorted_hash_list(data: Dict, hash_function: str) -> List[Dict]:
+def _create_sorted_hash_list(data: List, hash_function: str) -> List[str]:
     """Create a sorted sha256 hash list."""
     out = []
     for obj in data:
@@ -42,7 +42,7 @@ def _build_path(key: str, base_path: str):
     return key
 
 
-def _build_element(path: str, siblings: str, value: Any):
+def _build_element(path: str, siblings: List[str], value: Any):
     """Build an element dictionary based on presence of sibling data."""
     if siblings:
         return {
@@ -57,20 +57,29 @@ def _build_element(path: str, siblings: str, value: Any):
     }
 
 
-def _flatten_json(data: Dict, hash_function: str, path: str = "", siblings: List = [], debug: bool = False) -> List:
+def _flatten_json(data: Any, hash_function: str, path: str = "", siblings: List = [], debug: bool = False) -> List:
     """Flatten json data structures into a sibling-aware data element list."""
     out = []
-    if type(data) is dict:
+
+    # Process non-empty dicts
+    if type(data) is dict and data:
         for key in data.keys():
             p = _build_path(key=f"{{{key}}}", base_path=path)
-            output = _flatten_json(data=data[key], hash_function=hash_function, path=p, siblings=siblings, debug=debug)
+            output = _flatten_json(
+                data=data[key],
+                hash_function=hash_function,
+                path=p,
+                siblings=siblings,
+                debug=debug,
+            )
             out.extend(output)
         return out
 
-    if type(data) is list:
+    # Process non-empty lists
+    if type(data) is list and data:
         p = _build_path(key=f"[{len(data)}]", base_path=path)
 
-        # Iterate and collect sibling structures, which'll be then attached to each sibling element
+        # Iterate and collect sibling structures, which will be then attached to each sibling element
         siblings = []
         for item in data:
             output = _flatten_json(data=item, hash_function=hash_function, path=p, debug=debug)
@@ -83,7 +92,13 @@ def _flatten_json(data: Dict, hash_function: str, path: str = "", siblings: List
 
         # Recurse with each value in list to typecheck it and eventually get the element value
         for item in data:
-            output = _flatten_json(data=item, hash_function=hash_function, path=p, siblings=siblings, debug=debug)
+            output = _flatten_json(
+                data=item,
+                hash_function=hash_function,
+                path=p,
+                siblings=siblings,
+                debug=debug,
+            )
             out.extend(output)
         return out
 

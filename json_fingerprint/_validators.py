@@ -21,7 +21,7 @@ JSON_FINGERPRINT_VERSIONS = (1,)
 
 
 def _validate_hash_function(hash_function: str, version: int):
-    if hash_function not in JFPV1_HASH_FUNCTIONS:
+    if version == 1 and hash_function not in JFPV1_HASH_FUNCTIONS:
         err = f"Expected one of supported hash functions '{JFPV1_HASH_FUNCTIONS}', " f"instead got '{hash_function}'"
         raise FingerprintHashFunctionError(err)
 
