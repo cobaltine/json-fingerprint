@@ -1,4 +1,6 @@
 [flake8]
-ignore = E226
-max-line-length = 119
+max-line-length = 150
 max-complexity = 10
+per-file-ignores =
+    json_fingerprint/tests/run.py:F401
+    json_fingerprint/__init__.py:F401

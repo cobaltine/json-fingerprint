@@ -1,11 +1,6 @@
 import hashlib
 import json
-
-from typing import (
-    Any,
-    Dict,
-    List,
-)
+from typing import Any, Dict, List
 
 
 def _create_json_hash(data: Any, hash_function: str) -> str:
@@ -15,17 +10,17 @@ def _create_json_hash(data: Any, hash_function: str) -> str:
         allow_nan=False,
         ensure_ascii=False,
         indent=None,
-        separators=(',', ':'),
+        separators=(",", ":"),
         skipkeys=False,
         sort_keys=True,
     )
-    if hash_function == 'sha256':
+    if hash_function == "sha256":
         m = hashlib.sha256()
-    if hash_function == 'sha384':
+    if hash_function == "sha384":
         m = hashlib.sha384()
-    if hash_function == 'sha512':
+    if hash_function == "sha512":
         m = hashlib.sha512()
-    m.update(stringified.encode('utf-8'))
+    m.update(stringified.encode("utf-8"))
 
     return m.hexdigest()
 
@@ -43,7 +38,7 @@ def _create_sorted_hash_list(data: Dict, hash_function: str) -> List[Dict]:
 def _build_path(key: str, base_path: str):
     """Build a path string."""
     if base_path:
-        return f'{base_path}|{key}'
+        return f"{base_path}|{key}"
     return key
 
 
@@ -51,29 +46,29 @@ def _build_element(path: str, siblings: str, value: Any):
     """Build an element dictionary based on presence of sibling data."""
     if siblings:
         return {
-            'path': path,
-            'siblings': siblings,
-            'value': value,
+            "path": path,
+            "siblings": siblings,
+            "value": value,
         }
 
     return {
-        'path': path,
-        'value': value,
+        "path": path,
+        "value": value,
     }
 
 
-def _flatten_json(data: Dict, hash_function: str, path: str = '', siblings: List = [], debug: bool = False) -> List:
+def _flatten_json(data: Dict, hash_function: str, path: str = "", siblings: List = [], debug: bool = False) -> List:
     """Flatten json data structures into a sibling-aware data element list."""
     out = []
     if type(data) is dict:
         for key in data.keys():
-            p = _build_path(key=f'{{{key}}}', base_path=path)
+            p = _build_path(key=f"{{{key}}}", base_path=path)
             output = _flatten_json(data=data[key], hash_function=hash_function, path=p, siblings=siblings, debug=debug)
             out.extend(output)
         return out
 
     if type(data) is list:
-        p = _build_path(key=f'[{len(data)}]', base_path=path)
+        p = _build_path(key=f"[{len(data)}]", base_path=path)
 
         # Iterate and collect sibling structures, which'll be then attached to each sibling element
         siblings = []
@@ -102,4 +97,4 @@ def _create_jfpv1_fingerprint(data: Any, hash_function: str, version: int):
     flattened_json = _flatten_json(data=data, hash_function=hash_function)
     sorted_hash_list = _create_sorted_hash_list(data=flattened_json, hash_function=hash_function)
     hex_digest = _create_json_hash(data=sorted_hash_list, hash_function=hash_function)
-    return f'jfpv1${hash_function}${hex_digest}'
+    return f"jfpv1${hash_function}${hex_digest}"

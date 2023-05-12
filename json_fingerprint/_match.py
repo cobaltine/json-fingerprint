@@ -1,5 +1,5 @@
-from ._decode import decode
 from ._create import create
+from ._decode import decode
 
 
 def match(input: str, target_fingerprint: str) -> bool:

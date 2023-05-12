@@ -12,22 +12,23 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.6', '3.7', '3.8', '3.9']
+        python-version: ['3.8', '3.9', '3.10', '3.11']
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
         python -m pip install flake8
+        python -m pip install isort
         python -m pip install coveralls
-    - name: Lint with flake8
+    - name: Test code formatting with flake8
       run: |
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=119 --statistics
+        flake8 ./json_fingerprint --count --exit-zero --statistics
+        isort . --diff
     - name: Test with unittest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

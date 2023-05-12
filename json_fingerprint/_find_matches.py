@@ -1,16 +1,14 @@
-from ._decode import decode
+from typing import Dict, List
+
 from ._create import create
-from typing import (
-    Dict,
-    List,
-)
+from ._decode import decode
 
 
 def _get_target_hashes(fingerprints: List[str]) -> List[Dict]:
     target_hashes = []
     for fingerprint in fingerprints:
         version, hash_function, _ = decode(fingerprint=fingerprint)
-        element = {'version': version, 'hash_function': hash_function}
+        element = {"version": version, "hash_function": hash_function}
         if element not in target_hashes:
             target_hashes.append(element)
 
@@ -20,7 +18,7 @@ def _get_target_hashes(fingerprints: List[str]) -> List[Dict]:
 def _create_input_fingerprints(input: str, target_hashes: List[Dict]) -> List[str]:
     input_fingerprints = []
     for element in target_hashes:
-        fingerprint = create(input=input, hash_function=element['hash_function'], version=element['version'])
+        fingerprint = create(input=input, hash_function=element["hash_function"], version=element["version"])
         input_fingerprints.append(fingerprint)
     return input_fingerprints
 
