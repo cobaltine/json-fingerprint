@@ -24,10 +24,11 @@ def _create_input_fingerprints(input: str, target_hashes: List[Dict]) -> List[st
 
 
 def find_matches(input: str, fingerprints: List[str], deduplicate: bool = False) -> List[str]:
-    """Match raw json str input to a list of fingerprints.
+    """Match raw json string input to a list of fingerprints
 
     Decodes the target fingerprints and creates a fingerprint from the input with identical parameters.
-    Creates a fingerprint from the input of each different JSON fingerprint type present in the fingerprint list."""
+    Creates a fingerprint from the input of each different JSON fingerprint type present in the fingerprint list.
+    """
     if deduplicate:
         fingerprints = list(set(fingerprints))
     target_hashes = _get_target_hashes(fingerprints=fingerprints)

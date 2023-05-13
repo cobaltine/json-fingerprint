@@ -22,7 +22,7 @@ JSON_FINGERPRINT_VERSIONS = (1,)
 
 def _validate_hash_function(hash_function: str, version: int):
     if version == 1 and hash_function not in JFPV1_HASH_FUNCTIONS:
-        err = f"Expected one of supported hash functions '{JFPV1_HASH_FUNCTIONS}', " f"instead got '{hash_function}'"
+        err = f"Expected one of supported hash functions '{JFPV1_HASH_FUNCTIONS}', instead got '{hash_function}'"
         raise FingerprintHashFunctionError(err)
 
 
@@ -34,7 +34,7 @@ def _validate_input_type(input: str):
 
 def _validate_version(version: int):
     if version not in JSON_FINGERPRINT_VERSIONS:
-        err = f"Expected one of supported JSON fingerprint versions '{JSON_FINGERPRINT_VERSIONS}', " f"instead got '{version}'"
+        err = f"Expected one of supported JSON fingerprint versions '{JSON_FINGERPRINT_VERSIONS}', instead got '{version}'"
         raise FingerprintVersionError(err)
 
 
@@ -45,5 +45,5 @@ def _validate_fingerprint_format(fingerprint: str):
         is_valid = True
 
     if not is_valid:
-        err = "Expected JSON fingerprint in format '{fingerprint_version}${hash_function}${hex_digest}', instead got: " f"{fingerprint}"
+        err = "Expected JSON fingerprint in format '{fingerprint_version}${hash_function}${hex_digest}', " f"instead got: {fingerprint}"
         raise FingerprintStringFormatError(err)

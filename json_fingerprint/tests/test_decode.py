@@ -10,7 +10,8 @@ class TestDecode(unittest.TestCase):
 
         Verify that:
         - Fingerprints of all jfpv1 SHA-2 variants are properly decoded
-        - Exception is properly raised with invalid fingerprint input"""
+        - Exception is properly raised with invalid fingerprint input
+        """
         input = json.dumps({"foo": "bar"})
         jfpv1_sha256 = create(input=input, hash_function="sha256", version=1)
         jfpv1_sha384 = create(input=input, hash_function="sha384", version=1)

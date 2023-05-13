@@ -1,5 +1,5 @@
 from ._jfpv1 import _create_jfpv1_fingerprint
-from ._utils import _load_json
+from ._load_json import _load_json
 from ._validators import (
     _validate_hash_function,
     _validate_input_type,

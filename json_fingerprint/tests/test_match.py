@@ -6,11 +6,12 @@ from json_fingerprint import _exceptions, create, match
 
 class TestMatch(unittest.TestCase):
     def test_jfpv1_match(self):
-        """Test json fingerprint matcher.
+        """Test json fingerprint matcher
 
         Verify that:
         - Fingerprints of all jfpv1 SHA-2 variants are properly matched
-        - Exceptions are properly raised with invalid fingerprints and input types"""
+        - Exceptions are properly raised with invalid fingerprints and input types
+        """
         input = json.dumps({"foo": "bar"})
         jfpv1_sha256 = create(input=input, hash_function="sha256", version=1)
         jfpv1_sha384 = create(input=input, hash_function="sha384", version=1)
