@@ -1,9 +1,9 @@
 # json-fingerprint
 
 ![](https://img.shields.io/github/license/cobaltine/json-fingerprint)
+[![](https://img.shields.io/pypi/v/json-fingerprint)](https://pypi.org/project/json-fingerprint/)
 ![](https://img.shields.io/pypi/pyversions/json-fingerprint)
 ![](https://img.shields.io/github/actions/workflow/status/cobaltine/json-fingerprint/ci.yml?branch=main&label=build)
-[![](https://img.shields.io/pypi/v/json-fingerprint)](https://pypi.org/project/json-fingerprint/)
 ![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/cobaltine/json-fingerprint)
 [![Coverage Status](https://coveralls.io/repos/github/cobaltine/json-fingerprint/badge.svg?branch=main)](https://coveralls.io/github/cobaltine/json-fingerprint?branch=main)
 
@@ -36,9 +36,11 @@ A JSON fingerprint consists of three parts: the version of the underlying canoni
 
 ## v1 release checklist (jfpv1)
 
-This is a list of high-level development and documentation tasks, which need to be completed prior to freezing the API for v1. Before v1, backwards-incompatible changes to the API are possible, although not likely from v0.10.0 onwards. Since the jfpv1 spec is work in progress, the fingerprints may not be fully comparable between different _0.y.z_ versions.
+This is a list of high-level development and documentation tasks, which need to be completed prior to freezing the API for v1. Before v1, backward-incompatible changes to the API are possible. Since the jfpv1 spec is work in progress, the fingerprints may not be fully comparable between different _0.y.z_ versions.
 
-- [ ] Formalized the jfpv1 specification
+**NB:** JSON fingerprints up until `v0.12.2` ignored empty objects and arrays as values. This behavior was changed in `v0.13.0` which means that JSON fingerprints created with earlier versions may produce different and incomparable hashes depending on the presence of empty objects or arrays.
+
+- [ ] Formalized and complete jfpv1 specification
 - [x] JSON type support
   - [x] Primitives and literals
   - [x] Arrays
@@ -72,12 +74,12 @@ JSON fingerprints can be created with the `create()` function, which requires th
 import json
 import json_fingerprint
 
-input_1 = json.dumps([3, 2, 1, [True, False], {'foo': 'bar'}])
-input_2 = json.dumps([2, {'foo': 'bar'}, 1, [False, True], 3])  # Different order
-fp_1 = json_fingerprint.create(input=input_1, hash_function='sha256', version=1)
-fp_2 = json_fingerprint.create(input=input_2, hash_function='sha256', version=1)
-print(f'Fingerpr. 1: {fp_1}')
-print(f'Fingerpr. 2: {fp_2}')
+input_1 = json.dumps([3, 2, 1, [True, False], {"foo": "bar"}])
+input_2 = json.dumps([2, {"foo": "bar"}, 1, [False, True], 3])  # Different order
+fp_1 = json_fingerprint.create(input=input_1, hash_function="sha256", version=1)
+fp_2 = json_fingerprint.create(input=input_2, hash_function="sha256", version=1)
+print(f"Fingerpr. 1: {fp_1}")
+print(f"Fingerpr. 2: {fp_2}")
 ```
 This will output two identical fingerprints regardless of the different order of the json elements:
 
@@ -96,11 +98,11 @@ JSON fingerprints can be decoded with the `decode()` convenience function. It re
 ```python
 import json_fingerprint
 
-fp = 'jfpv1$sha256$2ecb0c919fcb06024f55380134da3bbaac3879f98adce89a8871706fe50dda03'
+fp = "jfpv1$sha256$2ecb0c919fcb06024f55380134da3bbaac3879f98adce89a8871706fe50dda03"
 version, hash_function, hash = json_fingerprint.decode(fingerprint=fp)
-print(f'Version (integer): {version}')
-print(f'Hash function: {hash_function}')
-print(f'Secure hash: {hash}')
+print(f"Version (integer): {version}")
+print(f"Hash function: {hash_function}")
+print(f"Secure hash: {hash}")
 ```
 This will output the individual elements that make up a fingerprint as follows:
 
@@ -119,13 +121,13 @@ The `match()` is another convenience function that matches JSON data against a f
 import json
 import json_fingerprint
 
-input_1 = json.dumps([3, 2, 1, [True, False], {'foo': 'bar'}])
+input_1 = json.dumps([3, 2, 1, [True, False], {"foo": "bar"}])
 input_2 = json.dumps([3, 2, 1])
-target_fp = 'jfpv1$sha256$2ecb0c919fcb06024f55380134da3bbaac3879f98adce89a8871706fe50dda03'
+target_fp = "jfpv1$sha256$2ecb0c919fcb06024f55380134da3bbaac3879f98adce89a8871706fe50dda03"
 match_1 = json_fingerprint.match(input=input_1, target_fingerprint=target_fp)
 match_2 = json_fingerprint.match(input=input_2, target_fingerprint=target_fp)
-print(f'Fingerprint matches with input_1: {match_1}')
-print(f'Fingerprint matches with input_2: {match_2}')
+print(f"Fingerprint matches with input_1: {match_1}")
+print(f"Fingerprint matches with input_2: {match_2}")
 ```
 This will output the following:
 ```
@@ -144,26 +146,26 @@ import json_fingerprint
 
 # Produces SHA256: jfpv1$sha256$d119f4d8...b1710d9f
 # Produces SHA384: jfpv1$sha384$9bca46fd...fd0e2e9c
-input = json.dumps({'foo': 'bar'})
+input = json.dumps({"foo": "bar"})
 fingerprints = [
     # SHA256 match
-    'jfpv1$sha256$d119f4d8b802091520162b78f57a995a9ecbc88b20573b0c7e474072b1710d9f',
+    "jfpv1$sha256$d119f4d8b802091520162b78f57a995a9ecbc88b20573b0c7e474072b1710d9f",
     # SHA256 match (duplicate)
-    'jfpv1$sha256$d119f4d8b802091520162b78f57a995a9ecbc88b20573b0c7e474072b1710d9f',
+    "jfpv1$sha256$d119f4d8b802091520162b78f57a995a9ecbc88b20573b0c7e474072b1710d9f",
     # SHA384 match
-    ('jfpv1$sha384$9bca46fd7ef7aa2e16e68978b5eb5c294bd5b380780e81bcb1af97d4b339bca'
-     'f7f6a622b2f1a955eea2fadb8fd0e2e9c'),
+    ("jfpv1$sha384$9bca46fd7ef7aa2e16e68978b5eb5c294bd5b380780e81bcb1af97d4b339bca"
+     "f7f6a622b2f1a955eea2fadb8fd0e2e9c"),
     # SHA256, not a match
-    'jfpv1$sha256$73f7bb145f268c033ec22a0b74296cdbab1405415a3d64a1c79223aa9a9f7643',
+    "jfpv1$sha256$73f7bb145f268c033ec22a0b74296cdbab1405415a3d64a1c79223aa9a9f7643",
 ]
 matches = json_fingerprint.find_matches(input=input, fingerprints=fingerprints)
 # Print raw matches, which include 2 same SHA256 fingerprints
-print(*(f'\nMatch: {match[0:30]}...' for match in matches))
+print(*(f"\nMatch: {match[0:30]}..." for match in matches))
 deduplicated_matches = json_fingerprint.find_matches(input=input,
                                                      fingerprints=fingerprints,
                                                      deduplicate=True)
 # Print deduplicated matches
-print(*(f'\nDeduplicated match: {match[0:30]}...' for match in deduplicated_matches))
+print(*(f"\nDeduplicated match: {match[0:30]}..." for match in deduplicated_matches))
 ```
 This will output the following results, first the list with a duplicate and the latter with deduplicated results:
 ```
@@ -194,7 +196,7 @@ In practice, the jfpv1 specification purposefully ignores the original order of 
  * All values in the compared datasets are identical
  * The values exist in identical paths (arrays, object key-value pairs)
 
-In the case of arrays, each array gets a unique hash identifier based on the data elements it holds. This way, each flattened value "knows" to which array it belongs to. This identifier is called a _sibling hash_ because its derived from each value and its neighboring values.
+In the case of arrays, each array gets a unique hash identifier based on the data elements it holds. This way, each flattened value "knows" to which array it belongs to. This identifier is called a _sibling hash_ because it is derived from each array element's value as well as its neighboring values.
 
 ## Running tests
 
@@ -205,9 +207,9 @@ The entire internal test suite of json-fingerprint is included in its distributi
 If all tests ran successfully, this will produce an output similar to the following:
 
 ```
-..........................
+..............................
 ----------------------------------------------------------------------
-Ran 26 tests in 0.009s
+Ran 30 tests in 0.007s
 
 OK
 ```
