@@ -6,11 +6,12 @@ from json_fingerprint import _exceptions, _validators, create
 
 class TestValidators(unittest.TestCase):
     def test_json_fingerprint_version_error(self):
-        """Test json fingerprint version selector error.
+        """Test json fingerprint version selector error
 
         Verify that:
         - FingerprintVersionError is properly raised with an unsupported version
-        - FingerprintVersionError is not raised with a supported version"""
+        - FingerprintVersionError is not raised with a supported version
+        """
         with self.assertRaises(_exceptions.FingerprintVersionError):
             create(input=json.dumps({"foo": "bar"}), hash_function="sha256", version=-1)
 
@@ -24,11 +25,12 @@ class TestValidators(unittest.TestCase):
             _validators._validate_version(version=-1)
 
     def test_input_data_type_error(self):
-        """Test jfpv1 input data type error.
+        """Test jfpv1 input data type error
 
         Verify that:
         - FingerprintInputDataTypeError is properly raised with a non-string input
-        - FingerprintInputDataTypeError is not raised with a string input"""
+        - FingerprintInputDataTypeError is not raised with a string input
+        """
         with self.assertRaises(_exceptions.FingerprintInputDataTypeError):
             create(input=123, hash_function="sha256", version=1)
 
@@ -42,11 +44,12 @@ class TestValidators(unittest.TestCase):
             _validators._validate_input_type(input=123)
 
     def test_jfpv1_hash_function_error(self):
-        """Test json fingerprint hash function selector error.
+        """Test json fingerprint hash function selector error
 
         Verify that:
         - FingerprintHashFunctionError is properly raised with an unsupported hash function selector
-        - FingerprintHashFunctionError is not raised with a supported hash function selector"""
+        - FingerprintHashFunctionError is not raised with a supported hash function selector
+        """
         with self.assertRaises(_exceptions.FingerprintHashFunctionError):
             create(input=json.dumps({"foo": "bar"}), hash_function="not123", version=1)
 
@@ -64,7 +67,8 @@ class TestValidators(unittest.TestCase):
 
         Verify that:
         - FingerprintStringFormatError is properly raised with invalid fingerprint format
-        - FingerprintStringFormatError is not raised with a valid fingerprint"""
+        - FingerprintStringFormatError is not raised with a valid fingerprint
+        """
         with self.assertRaises(_exceptions.FingerprintStringFormatError):
             _validators._validate_fingerprint_format(fingerprint="invalid fingerprint")
 

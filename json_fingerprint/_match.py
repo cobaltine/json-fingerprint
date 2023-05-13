@@ -3,7 +3,7 @@ from ._decode import decode
 
 
 def match(input: str, target_fingerprint: str) -> bool:
-    """Match raw json str input to target fingerprint.
+    """Match raw json string input to target fingerprint
 
     Decodes the target fingerprint and creates a fingerprint from the input with identical parameters."""
     version, hash_function, _ = decode(fingerprint=target_fingerprint)

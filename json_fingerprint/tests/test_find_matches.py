@@ -15,7 +15,8 @@ class TestFindMatches(unittest.TestCase):
         """Test target hash list creation.
 
         Verify that:
-        - The returned element list contains only unique entries"""
+        - The returned element list contains only unique entries
+        """
         # Fingerprint list with duplicate entries
         fingerprints = [
             self.jfpv1_sha256,
@@ -39,7 +40,8 @@ class TestFindMatches(unittest.TestCase):
         """Test list matching's fingerprint creation function.
 
         Verify that:
-        - Fingerprints are correctly parsed from the given target hash elements"""
+        - Fingerprints are correctly parsed from the given target hash elements
+        """
         target_hashes = [
             {"version": 1, "hash_function": "sha256"},
             {"version": 1, "hash_function": "sha384"},
@@ -58,7 +60,8 @@ class TestFindMatches(unittest.TestCase):
         Verify that:
         - Fingerprints of all jfpv1 SHA-2 variants are properly matched in a fingerprint list
         - Deduplication works for duplicate entries in fingerprint list
-        - Exceptions are properly raised with invalid fingerprints and input types"""
+        - Exceptions are properly raised with invalid fingerprints and input types
+        """
         input = json.dumps({"bar": "foo"})
         chaff_jfpv1_sha256 = create(input=input, hash_function="sha256", version=1)
 
