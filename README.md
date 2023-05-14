@@ -9,10 +9,11 @@
 
 Create consistent and comparable fingerprints with secure hashes from unordered JSON data.
 
-A JSON fingerprint consists of three parts: the version of the underlying canonicalization algorithm, the hash function used and a hexadecimal digest of the hash function output. A complete example could look like this: `jfpv1$sha256$5815eb0ce6f4e5ab0a771cce2a8c5432f64222f8fd84b4cc2d38e4621fae86af`.
+A JSON fingerprint consists of three parts: the version of the underlying canonicalization algorithm, the hash function used and a hexadecimal digest of the hash function output. An example output could look like this: `jfpv1$sha256$5815eb0ce6f4e5ab0a771cce2a8c5432f64222f8fd84b4cc2d38e4621fae86af`.
 
 | Fingerprint element | Description                                                                         |
 |:--------------------|:------------------------------------------------------------------------------------|
+| $                   | JSON fingerprint element separator                                                  |
 | jfpv1               | JSON fingerprint version identifier: **j**son **f**inger**p**rint **v**ersion **1** |
 | sha256              | Hash function identifier (sha256, sha384 or sha512)                                 |
 | 5815eb0c...1fae86af | The secure hash function output in hexadecimal format                               |
@@ -30,6 +31,10 @@ A JSON fingerprint consists of three parts: the version of the underlying canoni
 * [JSON normalization](#json-normalization)
   * [Alternative specifications](#alternative-specifications)
   * [JSON Fingerprint v1 (jfpv1)](#json-fingerprint-v1-jfpv1)
+* [Performance](#performance)
+  * [Example 1: flat data structures](#example-1-flat-data-structures)
+  * [Example 2: nested data structures](#example-2-nested-data-structures)
+  * [Example 3: big JSON objects](#example-3-big-json-objects)
 * [Running tests](#running-tests)
 <!-- /TOC -->
 
@@ -197,6 +202,116 @@ In practice, the jfpv1 specification purposefully ignores the original order of 
  * The values exist in identical paths (arrays, object key-value pairs)
 
 In the case of arrays, each array gets a unique hash identifier based on the data elements it holds. This way, each flattened value "knows" to which array it belongs to. This identifier is called a _sibling hash_ because it is derived from each array element's value as well as its neighboring values.
+
+## Performance
+
+The JSON fingerprint v1 specification and its first implementation have been designed with a primary focus on functional utility over performance. There are some performance-related characteristics that are good to be aware of:
+
+ * Due to the way the internal _sibling hashes_ are computed, highly nested data structures will increase the processing time significantly
+ * The amount of data in a single data element, or the number of elements in a flat array, is much less meaningful performance-wise than the overall depth of the data structure
+
+Below are some examples of the performance impact when processing different types of data structures.
+
+### Example 1: flat data structures
+
+Processing an array of arrays with the maximum depth of 2 levels for each datum:
+
+```python
+import json
+import json_fingerprint
+import time
+
+data = json.dumps(
+    [
+        [1, 2],
+        [3, 4],
+        [5, 6],
+        [7, 8],
+        [9, 10],
+        [11, 12],
+    ]
+)
+start_time = time.time_ns()  # Measure time in nanoseconds
+iterations = 1000
+for i in range(iterations):
+    json_fingerprint.create(input=data, hash_function="sha256", version=1)
+end_time = time.time_ns()
+elapsed_time_ms = round(((end_time - start_time) / iterations / 1000000), 2)  # To milliseconds
+print(f"Average processing time per JSON fingerprint: {elapsed_time_ms} milliseconds")
+```
+
+Performance test results:
+```commandline
+Average processing time per JSON fingerprint: 0.27 milliseconds
+```
+
+As seen in the test results, flat data structures perform well on modern computer hardware.
+
+### Example 2: nested data structures
+
+Processing a nested array of arrays with datums `11` and `12` 7 levels deep in the data structure:
+
+```python
+import json
+import json_fingerprint
+import time
+
+data = json.dumps(
+    [
+        [1, 2, [3, 4, [5, 6, [7, 8, [9, 10, [11, 12]]]]]],
+    ]
+)
+start_time = time.time_ns()  # Measure time in nanoseconds
+iterations = 1000
+for i in range(iterations):
+    json_fingerprint.create(input=data, hash_function="sha256", version=1)
+end_time = time.time_ns()
+elapsed_time_ms = round(((end_time - start_time) / iterations / 1000000), 2)  # To milliseconds
+print(f"Average processing time per JSON fingerprint: {elapsed_time_ms} milliseconds")
+```
+
+Performance test results:
+```commandline
+Average processing time per JSON fingerprint: 2.75 milliseconds
+```
+
+Compared to the flat data structure with the same amount of data, the nesting of arrays increased the processing time tenfold.
+
+### Example 3: big JSON objects
+
+Processing a dynamically generated JSON object of three different sizes: `~256KiB`, `~512KiB`, and `~1MiB`:
+
+```python
+import json
+import json_fingerprint
+import time
+
+
+def test_performance(data: str, size: str) -> None:
+    start_time = time.time_ns()  # Measure time in nanoseconds
+    iterations = 1000
+    for i in range(iterations):
+        json_fingerprint.create(input=data, hash_function="sha256", version=1)
+    end_time = time.time_ns()
+    elapsed_time_ms = round(((end_time - start_time) / iterations / 1000000), 2)  # To milliseconds
+    print(f"Average processing time per JSON fingerprint ({size}): {elapsed_time_ms} milliseconds")
+
+
+text_block = "abcdefg " * 16384  # a single text element, total size ~128KiB
+text_list = ["hijklmn " * 128 for i in range(128)]  # 128 * 1KiB text elements, total size ~128KiB
+test_performance(json.dumps({"text_block": text_block, "text_list": text_list}), "~256KiB")
+test_performance(json.dumps({"text_block": text_block * 2, "text_list": text_list * 2}), "~512KiB")
+test_performance(json.dumps({"text_block": text_block * 4, "text_list": text_list * 4}), "~1MiB")
+```
+
+Performance test result:
+```commandline
+Average processing time per JSON fingerprint (~256KiB): 2.91 milliseconds
+Average processing time per JSON fingerprint (~512KiB): 5.42 milliseconds
+Average processing time per JSON fingerprint (~1MiB): 11.18 milliseconds
+```
+
+Processing fairly sizeable JSON objects with text content in a flat structure scales linearly.
 
 ## Running tests
 
