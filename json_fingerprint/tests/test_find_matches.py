@@ -1,15 +1,15 @@
 import json
 import unittest
 
-from json_fingerprint import _exceptions, _find_matches, create
+from json_fingerprint import _find_matches, create, exceptions, hash_functions
 
 
 class TestFindMatches(unittest.TestCase):
     def setUp(self):
         self.test_input = json.dumps({"foo": "bar"})
-        self.jfpv1_sha256 = create(input=self.test_input, hash_function="sha256", version=1)
-        self.jfpv1_sha384 = create(input=self.test_input, hash_function="sha384", version=1)
-        self.jfpv1_sha512 = create(input=self.test_input, hash_function="sha512", version=1)
+        self.jfpv1_sha256 = create(input=self.test_input, hash_function=hash_functions.SHA256, version=1)
+        self.jfpv1_sha384 = create(input=self.test_input, hash_function=hash_functions.SHA384, version=1)
+        self.jfpv1_sha512 = create(input=self.test_input, hash_function=hash_functions.SHA512, version=1)
 
     def test_get_target_hashes(self):
         """Test target hash list creation.
@@ -30,9 +30,9 @@ class TestFindMatches(unittest.TestCase):
         self.assertEqual(len(target_hashes), 3)
 
         expected_elements = [
-            {"version": 1, "hash_function": "sha256"},
-            {"version": 1, "hash_function": "sha384"},
-            {"version": 1, "hash_function": "sha512"},
+            {"version": 1, "hash_function": hash_functions.SHA256},
+            {"version": 1, "hash_function": hash_functions.SHA384},
+            {"version": 1, "hash_function": hash_functions.SHA512},
         ]
         self.assertEqual(expected_elements, target_hashes)
 
@@ -43,9 +43,9 @@ class TestFindMatches(unittest.TestCase):
         - Fingerprints are correctly parsed from the given target hash elements
         """
         target_hashes = [
-            {"version": 1, "hash_function": "sha256"},
-            {"version": 1, "hash_function": "sha384"},
-            {"version": 1, "hash_function": "sha512"},
+            {"version": 1, "hash_function": hash_functions.SHA256},
+            {"version": 1, "hash_function": hash_functions.SHA384},
+            {"version": 1, "hash_function": hash_functions.SHA512},
         ]
 
         input_fingerprints = _find_matches._create_input_fingerprints(input=self.test_input, target_hashes=target_hashes)
@@ -63,7 +63,7 @@ class TestFindMatches(unittest.TestCase):
         - Exceptions are properly raised with invalid fingerprints and input types
         """
         input = json.dumps({"bar": "foo"})
-        chaff_jfpv1_sha256 = create(input=input, hash_function="sha256", version=1)
+        chaff_jfpv1_sha256 = create(input=input, hash_function=hash_functions.SHA256, version=1)
 
         # Fingerprint list with duplicate entries
         fingerprints = [
@@ -83,9 +83,9 @@ class TestFindMatches(unittest.TestCase):
         deduplicated_matches = _find_matches.find_matches(input=self.test_input, fingerprints=fingerprints, deduplicate=True)
         self.assertEqual(len(deduplicated_matches), 3)
 
-        with self.assertRaises(_exceptions.FingerprintJSONLoadError):
+        with self.assertRaises(exceptions.JSONLoad):
             _find_matches.find_matches(input='{"invalid": json string}', fingerprints=[self.jfpv1_sha256])
-        with self.assertRaises(_exceptions.FingerprintStringFormatError):
+        with self.assertRaises(exceptions.FingerprintPattern):
             _find_matches.find_matches(input=input, fingerprints=["invalid fingerprint string"])
 
 

@@ -1,7 +1,7 @@
 import json
 import unittest
 
-from json_fingerprint import _exceptions, create, decode
+from json_fingerprint import create, decode, exceptions, hash_functions
 
 
 class TestDecode(unittest.TestCase):
@@ -13,26 +13,26 @@ class TestDecode(unittest.TestCase):
         - Exception is properly raised with invalid fingerprint input
         """
         input = json.dumps({"foo": "bar"})
-        jfpv1_sha256 = create(input=input, hash_function="sha256", version=1)
-        jfpv1_sha384 = create(input=input, hash_function="sha384", version=1)
-        jfpv1_sha512 = create(input=input, hash_function="sha512", version=1)
+        jfpv1_sha256 = create(input=input, hash_function=hash_functions.SHA256, version=1)
+        jfpv1_sha384 = create(input=input, hash_function=hash_functions.SHA384, version=1)
+        jfpv1_sha512 = create(input=input, hash_function=hash_functions.SHA512, version=1)
 
         version, hash_function, hash = decode(fingerprint=jfpv1_sha256)
         self.assertEqual(version, 1)
-        self.assertEqual(hash_function, "sha256")
+        self.assertEqual(hash_function, hash_functions.SHA256)
         self.assertEqual(hash, jfpv1_sha256.split("$")[-1])
 
         version, hash_function, hash = decode(fingerprint=jfpv1_sha384)
         self.assertEqual(version, 1)
-        self.assertEqual(hash_function, "sha384")
+        self.assertEqual(hash_function, hash_functions.SHA384)
         self.assertEqual(hash, jfpv1_sha384.split("$")[-1])
 
         version, hash_function, hash = decode(fingerprint=jfpv1_sha512)
         self.assertEqual(version, 1)
-        self.assertEqual(hash_function, "sha512")
+        self.assertEqual(hash_function, hash_functions.SHA512)
         self.assertEqual(hash, jfpv1_sha512.split("$")[-1])
 
-        with self.assertRaises(_exceptions.FingerprintStringFormatError):
+        with self.assertRaises(exceptions.FingerprintPattern):
             decode(fingerprint="invalid fingerprint")
 
 

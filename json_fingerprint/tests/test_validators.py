@@ -1,99 +1,99 @@
 import json
 import unittest
 
-from json_fingerprint import _exceptions, _validators, create
+from json_fingerprint import _validators, create, exceptions, hash_functions
 
 
 class TestValidators(unittest.TestCase):
-    def test_json_fingerprint_version_error(self):
-        """Test json fingerprint version selector error
+    def test_json_fingerprint_version(self):
+        """Test JSON fingerprint FingerprintVersion exception.
 
         Verify that:
-        - FingerprintVersionError is properly raised with an unsupported version
-        - FingerprintVersionError is not raised with a supported version
+        - FingerprintVersion exception is properly raised with an unsupported version
+        - FingerprintVersion exception is not raised with a supported version
         """
-        with self.assertRaises(_exceptions.FingerprintVersionError):
-            create(input=json.dumps({"foo": "bar"}), hash_function="sha256", version=-1)
+        with self.assertRaises(exceptions.FingerprintVersion):
+            create(input=json.dumps({"foo": "bar"}), hash_function=hash_functions.SHA256, version=-1)
 
-        try:
-            _validators._validate_version(version=1)
-        except Exception:
-            err = "_validate_version() failed with a valid version"
-            self.fail(err)
+        _validators._validate_version(version=1)
 
-        with self.assertRaises(_exceptions.FingerprintVersionError):
+        with self.assertRaises(exceptions.FingerprintVersion):
             _validators._validate_version(version=-1)
 
-    def test_input_data_type_error(self):
-        """Test jfpv1 input data type error
+    def test_input_data_type(self):
+        """Test jfpv1 input data type error.
 
         Verify that:
-        - FingerprintInputDataTypeError is properly raised with a non-string input
-        - FingerprintInputDataTypeError is not raised with a string input
+        - DataType exception is not raised with a valid string input
+        - DataType exception is properly raised with a non-string input
         """
-        with self.assertRaises(_exceptions.FingerprintInputDataTypeError):
-            create(input=123, hash_function="sha256", version=1)
+        with self.assertRaises(exceptions.InputDataType):
+            create(input=123, hash_function=hash_functions.SHA256, version=1)
 
         try:
             _validators._validate_input_type(input="abc")
-        except Exception:
+        except Exception as exc:
             err = "_validate_input_type() failed with a valid string"
-            self.fail(err)
+            self.fail(f"{err}: {exc}")
 
-        with self.assertRaises(_exceptions.FingerprintInputDataTypeError):
+        with self.assertRaises(exceptions.InputDataType):
             _validators._validate_input_type(input=123)
 
-    def test_jfpv1_hash_function_error(self):
-        """Test json fingerprint hash function selector error
+    def test_jfpv1_hash_function(self):
+        """Test JSON fingerprint HashFunction exception.
 
         Verify that:
-        - FingerprintHashFunctionError is properly raised with an unsupported hash function selector
-        - FingerprintHashFunctionError is not raised with a supported hash function selector
+        - HashFunction exception is properly raised with an unsupported hash function selector
+        - HashFunction exception is not raised with a supported hash function selector
         """
-        with self.assertRaises(_exceptions.FingerprintHashFunctionError):
+        with self.assertRaises(exceptions.HashFunction):
             create(input=json.dumps({"foo": "bar"}), hash_function="not123", version=1)
 
         try:
-            _validators._validate_hash_function(hash_function="sha256", version=1)
-        except Exception:
+            _validators._validate_hash_function(hash_function=hash_functions.SHA256, version=1)
+        except Exception as exc:
             err = "_validate_hash_function() failed with a valid hash function and version"
-            self.fail(err)
+            self.fail(f"{err}: {exc}")
 
-        with self.assertRaises(_exceptions.FingerprintHashFunctionError):
+        with self.assertRaises(exceptions.HashFunction):
             _validators._validate_hash_function(hash_function="not123", version=1)
 
-    def test_validate_fingerprint_format(self):
-        """Test json fingerprint format validator.
+    def test_validate_fingerprint_pattern(self):
+        """Test json fingerprint pattern validator.
 
         Verify that:
-        - FingerprintStringFormatError is properly raised with invalid fingerprint format
-        - FingerprintStringFormatError is not raised with a valid fingerprint
+        - FingerprintPattern exception is not raised with a valid fingerprint
+        - FingerprintPattern exception is raised with an invalid fingerprint
         """
-        with self.assertRaises(_exceptions.FingerprintStringFormatError):
+        with self.assertRaises(exceptions.FingerprintPattern):
             _validators._validate_fingerprint_format(fingerprint="invalid fingerprint")
 
         input = json.dumps({"foo": "bar"})
-        jfpv1_sha256 = create(input=input, hash_function="sha256", version=1)
-        jfpv1_sha384 = create(input=input, hash_function="sha384", version=1)
-        jfpv1_sha512 = create(input=input, hash_function="sha512", version=1)
+        jfpv1_sha256 = create(input=input, hash_function=hash_functions.SHA256, version=1)
+        jfpv1_sha384 = create(input=input, hash_function=hash_functions.SHA384, version=1)
+        jfpv1_sha512 = create(input=input, hash_function=hash_functions.SHA512, version=1)
 
         try:
             _validators._validate_fingerprint_format(fingerprint=jfpv1_sha256)
-        except Exception:
+        except Exception as exc:
             err = "_validate_fingerprint_format() failed with a valid json-sha256 fingerprint"
-            self.fail(err)
+            self.fail(f"{err}: {exc}")
 
         try:
             _validators._validate_fingerprint_format(fingerprint=jfpv1_sha384)
-        except Exception:
+        except Exception as exc:
             err = "_validate_fingerprint_format() failed with a valid json-sha384 fingerprint"
-            self.fail(err)
+            self.fail(f"{err}: {exc}")
 
         try:
             _validators._validate_fingerprint_format(fingerprint=jfpv1_sha512)
-        except Exception:
+        except Exception as exc:
             err = "_validate_fingerprint_format() failed with a valid json-sha512 fingerprint"
-            self.fail(err)
+            self.fail(f"{err}: {exc}")
+
+        fp = "jfpv1$exception_test"
+        with self.assertRaises(exceptions.FingerprintPattern):
+            _validators._validate_fingerprint_format(fingerprint=fp)
 
 
 if __name__ == "__main__":

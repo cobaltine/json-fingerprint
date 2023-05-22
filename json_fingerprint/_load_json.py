@@ -1,6 +1,6 @@
 import json
 
-from ._exceptions import FingerprintJSONLoadError
+from .exceptions import JSONLoad
 
 
 def _load_json(data: str):
@@ -8,4 +8,4 @@ def _load_json(data: str):
         return json.loads(data)
     except Exception:
         err = "Unable to load JSON"
-        raise FingerprintJSONLoadError(err) from None
+        raise JSONLoad(err) from None

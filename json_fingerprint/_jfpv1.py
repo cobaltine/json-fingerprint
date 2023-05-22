@@ -2,10 +2,12 @@ import hashlib
 import json
 from typing import Any, Dict, List
 
+from json_fingerprint import hash_functions
+
 
 def _create_json_hash(data: Any, hash_function: str) -> str:
-    """Create an sha256 hash from json-converted data, sorted by key names."""
-    stringified = json.dumps(
+    """Create a hash hex digest from json-converted data."""
+    json_string = json.dumps(
         data,
         allow_nan=False,
         ensure_ascii=False,
@@ -14,19 +16,19 @@ def _create_json_hash(data: Any, hash_function: str) -> str:
         skipkeys=False,
         sort_keys=True,
     )
-    if hash_function == "sha256":
+    if hash_function == hash_functions.SHA256:
         m = hashlib.sha256()
-    if hash_function == "sha384":
+    if hash_function == hash_functions.SHA384:
         m = hashlib.sha384()
-    if hash_function == "sha512":
+    if hash_function == hash_functions.SHA512:
         m = hashlib.sha512()
-    m.update(stringified.encode("utf-8"))
+    m.update(json_string.encode("utf-8"))
 
     return m.hexdigest()
 
 
 def _create_sorted_hash_list(data: List, hash_function: str) -> List[str]:
-    """Create a sorted sha256 hash list."""
+    """Create a sorted hash hex digest list."""
     out = []
     for obj in data:
         hash = _create_json_hash(obj, hash_function=hash_function)
@@ -107,7 +109,7 @@ def _flatten_json(data: Any, hash_function: str, path: str = "", siblings: List 
     return out
 
 
-def _create_jfpv1_fingerprint(data: Any, hash_function: str, version: int):
+def _create_jfpv1_fingerprint(data: Any, hash_function: str):
     """Create a jfpv1 fingerprint."""
     flattened_json = _flatten_json(data=data, hash_function=hash_function)
     sorted_hash_list = _create_sorted_hash_list(data=flattened_json, hash_function=hash_function)
