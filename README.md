@@ -3,11 +3,14 @@
 ![](https://img.shields.io/github/license/cobaltine/json-fingerprint)
 [![](https://img.shields.io/pypi/v/json-fingerprint)](https://pypi.org/project/json-fingerprint/)
 ![](https://img.shields.io/pypi/pyversions/json-fingerprint)
-![](https://img.shields.io/github/actions/workflow/status/cobaltine/json-fingerprint/ci.yml?branch=main&label=build)
-![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/cobaltine/json-fingerprint)
 [![Coverage Status](https://coveralls.io/repos/github/cobaltine/json-fingerprint/badge.svg?branch=main)](https://coveralls.io/github/cobaltine/json-fingerprint?branch=main)
 
 Create consistent and comparable fingerprints with secure hashes from unordered JSON data.
+
+Common use cases include:
+- Detecting duplicate payloads in a data pipeline
+- Generating cache keys in a distributed environment
+- Data integrity checks for JSON datasets
 
 A JSON fingerprint consists of three parts: the version of the underlying canonicalization algorithm, the hash function used and a hexadecimal digest of the hash function output. An example output could look like this: `jfpv1$sha256$5815eb0ce6f4e5ab0a771cce2a8c5432f64222f8fd84b4cc2d38e4621fae86af`.
 
@@ -38,28 +41,7 @@ A JSON fingerprint consists of three parts: the version of the underlying canoni
 * [Running tests](#running-tests)
 <!-- /TOC -->
 
-
-## v1 release checklist (jfpv1)
-
-This is a list of high-level development and documentation tasks, which need to be completed prior to freezing the API for v1. Before v1, backward-incompatible changes to the API are possible. Since the jfpv1 spec is work in progress, the fingerprints may not be fully comparable between different _0.y.z_ versions.
-
 **NB:** JSON fingerprints up until `v0.12.2` ignored empty objects and arrays as values. This behavior was changed in `v0.13.0` which means that JSON fingerprints created with earlier versions may produce different and incomparable hashes depending on the presence of empty objects or arrays.
-
-- [ ] Formalized and complete jfpv1 specification
-- [x] JSON type support
-  - [x] Primitives and literals
-  - [x] Arrays
-  - [x] Objects
-- [x] Flattened "sibling-aware" internal data structure
-- [x] Support nested JSON data structures with mixed types
-- [x] Support most common SHA-2 hash functions
-  - [x] SHA256
-  - [x] SHA384
-  - [x] SHA512
-- [x] Dynamic jfpv1 fingerprint comparison function (JSON string against a fingerprint)
-- [x] Performance characteristics that scale sufficiently
-- [ ] Extensive verification against potential fingerprint (hash) collisions
-
 
 ## Installation
 
@@ -200,7 +182,7 @@ The jfpv1 JSON fingerprint function transforms the data internally into a normal
 
 ### Alternative specifications
 
-Most existing JSON normalization/canonicalization specifications and related implementations operate on three key aspects: data structures, values and data ordering. While the ordering of key-value pairs (objects) is straightforward, issues usually arise from the ordering of arrays.
+Most existing JSON normalization/canonicalization specifications, and related implementations, operate on three key aspects: data structures, values and data ordering. While the ordering of key-value pairs (objects) is straightforward, issues usually arise from the ordering of arrays.
 
 The JSON specifications, including the most recent [RFC 8259](https://tools.ietf.org/html/rfc8259), have always considered the order of array elements to be _meaningful_. As data gets serialized, transferred, deserialized and serialized again throughout various systems, maintaining the order of array elements becomes impractical if not impossible in many cases. As a consequence, this makes the creation and comparison of secure hashes of JSON data across multiple systems a complex process.
 

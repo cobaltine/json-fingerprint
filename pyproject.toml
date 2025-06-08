@@ -1,6 +1,6 @@
 [tool.black]
 line-length = 150
-target-version = ['py311']
+target-version = ['py313']
 include = '\.pyi?$'
 
 [tool.isort]
